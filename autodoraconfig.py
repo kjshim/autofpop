@@ -5,7 +5,7 @@ import logging
 CONFIG_FILENAME = 'config.json'
 
 C = {
-    "SCREEN_DEVICE":'',
+    "SCREEN_DEVICE":'unknown',
     "TMP_DIR":'',
 }
 

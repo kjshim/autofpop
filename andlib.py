@@ -9,16 +9,16 @@ from autodoraconfig import C
 DEVRE = re.compile('/dev/input/event[\d]+')
 
 def StartServer():
-    logging.debug(subprocess.check_output(["adb", "start-server" ],stderr=subprocess.STDOUT))
+    logging.debug(subprocess.check_output(["adb", "-d", "start-server" ],stderr=subprocess.STDOUT))
 
 def GetTempDirectory():
-    result = subprocess.check_output(["adb", "shell", "echo", "$EXTERNAL_STORAGE" ],stderr=subprocess.STDOUT).strip()
+    result = subprocess.check_output(["adb", "-d", "shell", "echo", "$EXTERNAL_STORAGE" ],stderr=subprocess.STDOUT).strip()
     logging.debug("TMPDIR:%s"%result)
     return result
 
 
 def DetectScreenDevice():
-    result = subprocess.check_output(["adb", "shell", "getevent", "-p" ],stderr=subprocess.STDOUT)
+    result = subprocess.check_output(["adb", "-d", "shell", "getevent", "-p" ],stderr=subprocess.STDOUT)
 
     logging.debug(result)
     result = result.lower()
@@ -58,8 +58,8 @@ def SwipeLine(poslist):
         f.write("sendevent " + C['SCREEN_DEVICE'] + " %d %d %d\n"%v)
     f.close()
 
-    logging.debug(subprocess.check_output(["adb", "push", "my.sh", "%s/my.sh" % C['TMP_DIR'] ],stderr=subprocess.STDOUT))
-    logging.debug(subprocess.check_output(["adb", "shell", "sh", "%s/my.sh" %C['TMP_DIR']]))
+    logging.debug(subprocess.check_output(["adb", "-d", "push", "my.sh", "%s/my.sh" % C['TMP_DIR'] ],stderr=subprocess.STDOUT))
+    logging.debug(subprocess.check_output(["adb", "-d", "shell", "sh", "%s/my.sh" %C['TMP_DIR']]))
 
 
 def ReadRawImage(fname):
@@ -69,14 +69,14 @@ def ReadRawImage(fname):
     return im
 
 def GetScreen(fname='img.raw'):
-    logging.debug(subprocess.check_output(["adb", "shell", "/system/bin/screencap %s/%s"%(C['TMP_DIR'], fname) ]))
-    logging.debug(subprocess.check_output(["adb", "pull", "%s/%s"%(C['TMP_DIR'], fname), fname ],stderr=subprocess.STDOUT))
-    logging.debug(subprocess.check_output(["adb", "shell", "rm %s/%s" % (C['TMP_DIR'],fname) ]))
+    logging.debug(subprocess.check_output(["adb", "-d", "shell", "/system/bin/screencap %s/%s"%(C['TMP_DIR'], fname) ]))
+    logging.debug(subprocess.check_output(["adb", "-d", "pull", "%s/%s"%(C['TMP_DIR'], fname), fname ],stderr=subprocess.STDOUT))
+    logging.debug(subprocess.check_output(["adb", "-d", "shell", "rm %s/%s" % (C['TMP_DIR'],fname) ]))
     im = ReadRawImage(fname)
     return im
 
 def GetDeviceId():
-    output = subprocess.check_output(["adb", "devices"]).strip().split("\r\n")[1:]
+    output = subprocess.check_output(["adb", "-d", "devices"]).strip().split("\r\n")[1:]
     if len(output) < 1:
         return None
     else:
