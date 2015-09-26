@@ -13,8 +13,8 @@ model = recognition.ImgRecognizer()
 model.load()
 model.train()
 
-# CUTMODE="xiaomi"
-CUTMODE="lucy"
+CUTMODE="xiaomi"
+# CUTMODE="lucy"
 
 SCREEN_NORMALIZE_SIZE = (960, 540)
 CELL_NORMALIZE_SIZE = (50,50)

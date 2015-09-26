@@ -60,10 +60,10 @@ class ImgRecognizer:
 
     def img2feat(self, img):
         resized = transform.resize(img, self.downscale_res)[:,:,:3]
-        # colvec  = getColorVector(resized, 5)
+        colvec  = getColorVector(resized, 5)
         return np.concatenate([
             resized.flatten(),
-            # colvec,
+            colvec,
         ])
 
     def load(self):
@@ -79,25 +79,26 @@ class ImgRecognizer:
         y = np.array(self.target_values)
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=0.1)
-        n_components = 30
+        n_components = 100
 
-        pca = RandomizedPCA(n_components=n_components, whiten=True).fit(X_train)
+        self.pca = RandomizedPCA(n_components=n_components, whiten=True).fit(X_train)
 
-        X_train_pca = pca.transform(X_train)
-        X_test_pca = pca.transform(X_test)
+        X_train_pca = self.pca.transform(X_train)
+        X_test_pca = self.pca.transform(X_test)
 
         param_grid = {'C': [1e3, 5e3, 1e4, 5e4, 1e5],
               'gamma': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1], }
-        clf = GridSearchCV(SVC(kernel='rbf', class_weight='auto'), param_grid)
-        clf = clf.fit(X_train_pca, y_train)
+        self.clf = GridSearchCV(SVC(kernel='rbf', class_weight='auto'), param_grid)
+        self.clf = self.clf.fit(X_train_pca, y_train)
         print("Best estimator found by grid search:")
-        print(clf.best_estimator_)
+        print(self.clf.best_estimator_)
 
         print("Predicting people's names on the test set")
-        print(classification_report(y_test, y_pred, target_names=target_names))
-        print(confusion_matrix(y_test, y_pred, labels=range(n_classes)))
-        self.svc.fit(np_data, np_values)
-        joblib.dump(self.svc, 'svc.dat', compress=9)
+        y_pred = self.clf.predict(X_test_pca)
+        print(classification_report(y_test, y_pred))
+        print(confusion_matrix(y_test, y_pred))
+        # self.svc.fit(np_data, np_values)
+        # joblib.dump(self.svc, 'svc.dat', compress=9)
 
     def test(self):
         np_train_data = np.array(self.training_data)
@@ -117,22 +118,12 @@ class ImgRecognizer:
         return result
 
     def predict(self, img):
-        resized_img = transform.resize(img, self.downscale_res)
-        maxvv = 1000
-        maxi = -1
-        color_img = getColorVector(resized_img, 5)
-        for i, td in enumerate(self.training_data):
-            cc = getColorVector(td, 5)
-            vv = distance.euclidean(color_img, cc)
-            if vv < maxvv:
-                maxvv = vv
-                maxi = i
-
-        result = self.target_values[maxi]
+        feat = self.img2feat(img)
+        afterpca = self.pca.transform(feat)
+        result = int(self.clf.predict(afterpca))
         outdir = os.path.join("data/PredictionLog")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
-        io.imsave(os.path.join(outdir,  CELL_NAMES[result] + "_" + str(uuid.uuid4()) + ".png"), resized_img)
-
+        io.imsave(os.path.join(outdir,  CELL_NAMES[result] + "_" + str(uuid.uuid4()) + ".png"), transform.resize(img, self.downscale_res))
         return result
 
