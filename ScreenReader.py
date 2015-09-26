@@ -6,7 +6,6 @@ from scipy import misc
 from skimage import io
 from skimage.color import rgb2gray
 from skimage import transform
-from skimage.feature import match_template
 
 ## train model
 import recognition
@@ -14,8 +13,8 @@ model = recognition.ImgRecognizer()
 model.load()
 model.train()
 
-CUTMODE="xiaomi"
-# CUTMODE="lucy"
+# CUTMODE="xiaomi"
+CUTMODE="lucy"
 
 SCREEN_NORMALIZE_SIZE = (960, 540)
 CELL_NORMALIZE_SIZE = (50,50)

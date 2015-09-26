@@ -161,7 +161,7 @@ class SimpleSolver:
         if len(candies_coords) == 4:
             score *= 15
         if len(candies_coords) >= 5:
-            score *= 50
+            score *= 100
         return score
 
     def compute_explosions_chocolate(self, board, color):
@@ -394,18 +394,20 @@ class SimpleSolver:
             else:
                 return score_end, [end, start], end_board
 
+    def getPossibleDirections(self, j):
+        if(j%2 == 0):
+            possible_directions = [(1, 0), (-1, 0), (-1, -1), (0, -1), (-1, 1), (0, 1)]
+        else:
+            possible_directions = [(1, 0), (-1, 0), (1, -1), (1, 1), (0, 1), (0, -1)]
+        return possible_directions
+
     def solve_board(self, board):
         self.game_board = board
         max_score = 0
         chosen_move = []
         for i in range(0, 8):
             for j in range(0, 8):
-                if(j%2 == 0):
-                    possible_directions = [(1, 0), (-1, 0), (-1, -1), (0, -1), (-1, 1), (0, 1)]
-                else:
-                    possible_directions = [(1, 0), (-1, 0), (1, -1), (1, 1), (0, 1), (0, -1)]
-
-                for d in possible_directions:
+                for d in self.getPossibleDirections(j):
                     score, move, b = self.check_direction((i, j), d)
                     if score >= max_score:
                         max_score = score

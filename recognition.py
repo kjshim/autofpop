@@ -14,6 +14,13 @@ from scipy.spatial import distance
 from friendspop import CELL_NAMES
 import friendspop
 import uuid
+from skimage.feature import match_template
+from sklearn.decomposition import RandomizedPCA
+from sklearn.grid_search import GridSearchCV
+from sklearn.svm import SVC
+from sklearn.cross_validation import train_test_split
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
 
 '''
  candy values:
@@ -48,17 +55,15 @@ class ImgRecognizer:
         training_imgs = os.listdir(path)
         for f in training_imgs:
             img = io.imread(path+'/'+f)
-            # self.training_data.append(self.img2feat(img))
-            self.training_data.append(transform.resize(img, self.downscale_res))
+            self.training_data.append(self.img2feat(img))
             self.target_values.append(target_value)
 
     def img2feat(self, img):
         resized = transform.resize(img, self.downscale_res)[:,:,:3]
-        colvec  = getColorVector(resized, 5)
-        daisy = feature.daisy(color.rgb2gray(resized))
+        # colvec  = getColorVector(resized, 5)
         return np.concatenate([
-            colvec,
-            # daisy.flatten(),
+            resized.flatten(),
+            # colvec,
         ])
 
     def load(self):
@@ -67,11 +72,30 @@ class ImgRecognizer:
                 self._load(dirname, resp_value)
 
     def train(self):
-        return
         if not self.training_data:
             self.load()
-        np_data = np.array(self.training_data)
-        np_values = np.array(self.target_values)
+
+        X = np.array(self.training_data)
+        y = np.array(self.target_values)
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.1)
+        n_components = 30
+
+        pca = RandomizedPCA(n_components=n_components, whiten=True).fit(X_train)
+
+        X_train_pca = pca.transform(X_train)
+        X_test_pca = pca.transform(X_test)
+
+        param_grid = {'C': [1e3, 5e3, 1e4, 5e4, 1e5],
+              'gamma': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1], }
+        clf = GridSearchCV(SVC(kernel='rbf', class_weight='auto'), param_grid)
+        clf = clf.fit(X_train_pca, y_train)
+        print("Best estimator found by grid search:")
+        print(clf.best_estimator_)
+
+        print("Predicting people's names on the test set")
+        print(classification_report(y_test, y_pred, target_names=target_names))
+        print(confusion_matrix(y_test, y_pred, labels=range(n_classes)))
         self.svc.fit(np_data, np_values)
         joblib.dump(self.svc, 'svc.dat', compress=9)
 
