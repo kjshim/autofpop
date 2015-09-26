@@ -14,7 +14,6 @@ import time
 import hashlib
 import logging
 import logging.config
-import myauth
 import andlib
 
 class TableDetectionFailed(Exception):
@@ -464,10 +463,6 @@ if __name__ == '__main__':
         devid = andlib.GetDeviceId()
         if not devid:
             logging.info("Device is not connected. \r\nPlease connect your device via USB and make sure that USB debugging enabled.")
-            raw_input()
-            sys.exit()
-        if not myauth.CheckSerial(devid):
-            print "Failed to authenticate."
             raw_input()
             sys.exit()
     except Exception, e:
