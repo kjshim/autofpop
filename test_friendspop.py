@@ -3,6 +3,10 @@ import recognition
 import ScreenReader
 import matplotlib.pyplot as plt
 from skimage import draw
+from skimage import io
+import andlib
+import datetime
+from pprint import pprint
 
 def test1():
     sampledata = [[2, 2, 7, 7, 2, 6, 0, 2, 4],
@@ -33,4 +37,39 @@ def test2():
     plt.plot([x1,x2], [y1,y2], 'k-', lw=2)
     plt.show()
 
-test2()
+def testUsingPhone():
+    andlib.Init()
+    while True:
+        sc = andlib.GetScreen()
+        sc = ScreenReader.normalizeImage(sc)
+        io.imsave("data/history/hist_" + friendspop.getTimeStr() + ".png", sc)
+        mat = ScreenReader.createMatrixFromScreen(sc)
+        pprint(mat)
+        friendspop.print_board(mat)
+        solver = friendspop.SimpleSolver()
+        score, [start, end] = solver.solve_board(mat)
+        print score
+        print(start, end)
+        x1, y1 = ScreenReader.GetCellMidPoint(sc, start[0], start[1])
+        x2, y2 = ScreenReader.GetCellMidPoint(sc, end[0], end[1])
+        print((x1,y1), (x2,y2))
+        plt.imshow(sc)
+        plt.plot([x1,x2], [y1,y2], 'k-', lw=2)
+        plt.show()
+
+def testDebugLogic():
+    mat =   [[5, 5, -1, 5, 5, 5, 5, 5, 5],
+             [-1, 7, -1, 3, -1, 4, -1, 3, -1],
+             [-1, 6, 4, 2, 15, 4, 4, 7, -1],
+             [-1, 3, 7, 17, 6, 3, 6, 3, -1],
+             [-1, 1, 10, 6, 18, 1, 1, 1, -1],
+             [-1, 4, 3, 1, 15, 2, 6, 3, -1],
+             [-1, 3, 4, 6, 1, 6, 6, 1, -1],
+             [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+             [12, -1, 5, -1, 5, -1, 5, -1, 5]]
+
+    solver = friendspop.SimpleSolver()
+    solver.game_board = mat
+    solver.check_direction((3, 7), (1, 0))
+testUsingPhone()
+# testDebugLogic()

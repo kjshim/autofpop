@@ -1,4 +1,9 @@
 from copy import deepcopy
+import datetime
+
+def getTimeStr():
+    dt=datetime.datetime.now()
+    return dt.strftime('%Y%m%d%H%M%S')
 
 CELL_NAMES = {
     -1: "NA",
@@ -18,16 +23,43 @@ CELL_NAMES = {
     14:"WHITE_JAIL",
     15:"YELLOW_JAIL",
     16:"MAPSCROLL",
+    
+    17:"BLACK_STRIPE_1",
+    18:"BLUE_STRIPE_1",
+    19:"BROWN_STRIPE_1",
+    20:"GREEN_STRIPE_1",
+    21:"PINK_STRIPE_1",
+    23:"WHITE_STRIPE_1",
+    24:"YELLOW_STRIPE_1",
+
+    25:"BLACK_STRIPE_2",
+    26:"BLUE_STRIPE_2",
+    27:"BROWN_STRIPE_2",
+    28:"GREEN_STRIPE_2",
+    29:"PINK_STRIPE_2",
+    31:"WHITE_STRIPE_2",
+    32:"YELLOW_STRIPE_2",
+
+    33:"BLACK_STRIPE_3",
+    34:"BLUE_STRIPE_3",
+    35:"BROWN_STRIPE_3",
+    36:"GREEN_STRIPE_3",
+    37:"PINK_STRIPE_3",
+    39:"WHITE_STRIPE_3",
+    40:"YELLOW_STRIPE_3",
+
+    100:"CHOCOLATE",
 }
 
 CELL_NAME_TO_VALUE = dict([(v,k) for k,v in CELL_NAMES.items()])
-MATCH_LIST_NAME = [["BLACK", "BLACK_JAIL"],
-              ["BLUE", "BLUE_JAIL"],
-              ["BROWN", "BROWN_JAIL"], 
-              ["GREEN", "GREEN_JAIL"],
-              ["PINK", "PINK_JAIL"],
-              ["WHITE", "WHITE_JAIL"],
-              ["YELLOW", "YELLOW_JAIL"],
+MATCH_LIST_NAME = [
+                  ["BLACK", "BLACK_JAIL", "BLACK_STRIPE_1",  "BLACK_STRIPE_2",  "BLACK_STRIPE_3"],
+              ["BLUE", "BLUE_JAIL", "BLUE_STRIPE_1",  "BLUE_STRIPE_2",  "BLUE_STRIPE_3"],
+              ["BROWN", "BROWN_JAIL", "BROWN_STRIPE_1",  "BROWN_STRIPE_2",  "BROWN_STRIPE_3"],
+              ["PINK", "PINK_JAIL", "PINK_STRIPE_1",  "PINK_STRIPE_2",  "PINK_STRIPE_3"],
+              ["WHITE", "WHITE_JAIL", "WHITE_STRIPE_1",  "WHITE_STRIPE_2",  "WHITE_STRIPE_3"],
+              ["YELLOW", "YELLOW_JAIL", "YELLOW_STRIPE_1",  "YELLOW_STRIPE_2",  "YELLOW_STRIPE_3"],
+              ["GREEN", "GREEN_JAIL", "GREEN_STRIPE_1",  "GREEN_STRIPE_2",  "GREEN_STRIPE_3"],
               ]
 
 MATCH_LIST = [ [CELL_NAME_TO_VALUE[v] for v in ml] for ml in MATCH_LIST_NAME]
@@ -35,9 +67,8 @@ MATCH_LIST = [ [CELL_NAME_TO_VALUE[v] for v in ml] for ml in MATCH_LIST_NAME]
 def print_board(board):
     for line in board:
         for elem in line:
-            print CELL_NAMES[elem] + ' ',
+            print CELL_NAMES[elem] + '\t\t',
         print
-
 
 class SimpleSolver:
     def __init__(self):
@@ -45,10 +76,10 @@ class SimpleSolver:
         self.match_list = MATCH_LIST
         self.special_candies = []
         self.simple_candies = [CELL_NAME_TO_VALUE[v] for v in ["BLACK","BLUE","BROWN","GREEN","PINK","WHITE","YELLOW"]]
-        self.striped_candies_h = []
+        self.striped_candies_h = [CELL_NAME_TO_VALUE[v] for v in ["GREEN_STRIPE_1", "WHITE_STRIPE_1"]]
         self.striped_candies_v = []
         self.cannot_move = [CELL_NAME_TO_VALUE[v] for v in
-                            ["STONE", "BLACK_JAIL","BLUE_JAIL","BROWN_JAIL","GREEN_JAIL","PINK_JAIL","WHITE_JAIL","YELLOW_JAIL"]]
+                            ["STONE", "BLACK_JAIL","BLUE_JAIL","BROWN_JAIL","GREEN_JAIL","PINK_JAIL","WHITE_JAIL","YELLOW_JAIL", "NA"]]
         self.striped_candies = self.striped_candies_h[:]
         self.striped_candies.extend(self.striped_candies_v)
 
@@ -152,7 +183,7 @@ class SimpleSolver:
             score = 500000
             to_explode = [start, end]
         else:
-            if board[start[0]][start[1]] == 12:  # chocolate
+            if board[start[0]][start[1]] == CELL_NAME_TO_VALUE["CHOCOLATE"]:  # chocolate
                 to_explode = self.compute_explosions_chocolate(board, board[end[0]][end[1]])
                 chocolate_multiplier = 100
             else:
@@ -161,7 +192,7 @@ class SimpleSolver:
             to_explode.sort(key=(lambda x: x[0]))
             score = self.compute_score(board, to_explode) * chocolate_multiplier
 
-        if len(to_explode) == 4 and board[start[0]][start[1]] != 12:  # striped candy
+        if len(to_explode) == 4 and board[start[0]][start[1]] != CELL_NAME_TO_VALUE["CHOCOLATE"]:  # striped candy
             board[start[0]][start[1]] += 1
             to_explode.remove(start)
 

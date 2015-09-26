@@ -44,11 +44,15 @@ def GetCellMidPoint(screenNorm, row, col):
 
 def readNormalizedScreen(fname):
     screen=io.imread(fname)[:,:,:3] # remove alpha
+    return normalizeImage(screen)
+
+def normalizeImage(screen):
     if(CUTMODE == "xiaomi"):
         scNormalized = transform.resize(screen, SCREEN_NORMALIZE_SIZE)[204:805,4:539,:]
     if(CUTMODE == "lucy"):
         scNormalized = transform.resize(screen, SCREEN_NORMALIZE_SIZE)[172:772,4:539,:]
     return scNormalized
+
 
 def createMatrixFromScreen(scNormalized):
     matrix = [[-1 for x in range(9)] for x in range(9)]

@@ -3,13 +3,15 @@ from sklearn import cross_validation
 from sklearn.externals import joblib
 from skimage import io
 from skimage import transform
+from skimage import color
 from skimage.feature import match_template
 import os
 from skimage import exposure
 import numpy as np
 from scipy.spatial import distance
 from friendspop import CELL_NAMES
-
+import friendspop
+import uuid
 '''
  candy values:
 - 0 blue
@@ -48,22 +50,29 @@ class ImgRecognizer:
 
     def load(self):
         for (dirname, resp_value) in DATASET:
-            self._load(dirname, resp_value)
+            if os.path.exists(dirname):
+                self._load(dirname, resp_value)
 
     def train(self):
         pass
-
 
     def predict(self, img):
         resized_img = transform.resize(img, self.downscale_res)
         maxvv = 1000
         maxi = -1
-        color_img = getColorVector(img, 5)
+        color_img = getColorVector(resized_img, 5)
         for i, td in enumerate(self.training_data):
             cc = getColorVector(td, 5)
             vv = distance.euclidean(color_img, cc)
             if vv < maxvv:
                 maxvv = vv
                 maxi = i
-        return self.target_values[maxi]
+
+        result = self.target_values[maxi]
+        outdir = os.path.join("data/PredictionLog")
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        io.imsave(os.path.join(outdir,  CELL_NAMES[result] + "_" + str(uuid.uuid4()) + ".png"), resized_img)
+
+        return result
 
