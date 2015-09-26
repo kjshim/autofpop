@@ -7,6 +7,8 @@ from skimage import io
 import andlib
 import datetime
 from pprint import pprint
+import glob, os
+
 
 def test1():
     sampledata = [[2, 2, 7, 7, 2, 6, 0, 2, 4],
@@ -40,9 +42,17 @@ def test2():
 def testUsingPhone():
     andlib.Init()
     while True:
+
+        try:
+            filelist = glob.glob("data/PredictionLog/*.png")
+            for f in filelist:
+                os.remove(f)
+        except:
+            pass
+
         sc = andlib.GetScreen()
         sc = ScreenReader.normalizeImage(sc)
-        io.imsave("data/history/hist_" + friendspop.getTimeStr() + ".png", sc)
+        # io.imsave("data/history/hist_" + friendspop.getTimeStr() + ".png", sc)
         mat = ScreenReader.createMatrixFromScreen(sc)
         pprint(mat)
         friendspop.print_board(mat)
@@ -71,5 +81,11 @@ def testDebugLogic():
     solver = friendspop.SimpleSolver()
     solver.game_board = mat
     solver.check_direction((3, 7), (1, 0))
+
+def testRecognition():
+    pass
+
+
 testUsingPhone()
+
 # testDebugLogic()

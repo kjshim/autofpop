@@ -48,19 +48,39 @@ CELL_NAMES = {
     39:"WHITE_STRIPE_3",
     40:"YELLOW_STRIPE_3",
 
-    100:"CHOCOLATE",
+    43:"BLACK_FLOWER",
+    44:"BLUE_FLOWER",
+    45:"BROWN_FLOWER",
+    46:"GREEN_FLOWER",
+    47:"PINK_FLOWER",
+    49:"WHITE_FLOWER",
+    50:"YELLOW_FLOWER",
+
+    53:"BLACK_SNOW",
+    54:"BLUE_SNOW",
+    55:"BROWN_SNOW",
+    56:"GREEN_SNOW",
+    57:"PINK_SNOW",
+    59:"WHITE_SNOW",
+    60:"YELLOW_SNOW",
+
+    63:"BLACK_TRI",
+    64:"BLUE_TRI",
+    65:"BROWN_TRI",
+    66:"GREEN_TRI",
+    67:"PINK_TRI",
+    69:"WHITE_TRI",
+    70:"YELLOW_TRI",
+
+    100:"CONE",
 }
 
 CELL_NAME_TO_VALUE = dict([(v,k) for k,v in CELL_NAMES.items()])
+POSTFIX = ["", "_JAIL", "_STRIPE_1", "_STRIPE_2", "_STRIPE_3", "_FLOWER", "_SNOW", "_TRI"]
+COLORS  = ["BLACK", "BLUE", "BROWN", "PINK", "WHITE", "YELLOW", "GREEN"]
 MATCH_LIST_NAME = [
-                  ["BLACK", "BLACK_JAIL", "BLACK_STRIPE_1",  "BLACK_STRIPE_2",  "BLACK_STRIPE_3"],
-              ["BLUE", "BLUE_JAIL", "BLUE_STRIPE_1",  "BLUE_STRIPE_2",  "BLUE_STRIPE_3"],
-              ["BROWN", "BROWN_JAIL", "BROWN_STRIPE_1",  "BROWN_STRIPE_2",  "BROWN_STRIPE_3"],
-              ["PINK", "PINK_JAIL", "PINK_STRIPE_1",  "PINK_STRIPE_2",  "PINK_STRIPE_3"],
-              ["WHITE", "WHITE_JAIL", "WHITE_STRIPE_1",  "WHITE_STRIPE_2",  "WHITE_STRIPE_3"],
-              ["YELLOW", "YELLOW_JAIL", "YELLOW_STRIPE_1",  "YELLOW_STRIPE_2",  "YELLOW_STRIPE_3"],
-              ["GREEN", "GREEN_JAIL", "GREEN_STRIPE_1",  "GREEN_STRIPE_2",  "GREEN_STRIPE_3"],
-              ]
+    [ color + post for post in POSTFIX]
+        for color in COLORS ]
 
 MATCH_LIST = [ [CELL_NAME_TO_VALUE[v] for v in ml] for ml in MATCH_LIST_NAME]
 
@@ -70,21 +90,55 @@ def print_board(board):
             print CELL_NAMES[elem] + '\t\t',
         print
 
+def getU(pos):
+    return (pos[0] - 1, pos[1])
+
+
+def getD(pos):
+    return (pos[0] + 1, pos[1])
+
+def getUL(pos):
+    if(pos[1]%2 == 0):
+        return (pos[0] -1, pos[1] - 1)
+    else:
+        return (pos[0], pos[1] - 1)
+
+def getDL(pos):
+    if(pos[1]%2 == 0):
+        return (pos[0], pos[1] - 1)
+    else:
+        return (pos[0] + 1, pos[1] - 1)
+
+def getUR(pos):
+    if(pos[1]%2 == 0):
+        return (pos[0] -1, pos[1] + 1)
+    else:
+        return (pos[0], pos[1] + 1)
+
+def getDR(pos):
+    if(pos[1]%2 == 0):
+        return (pos[0], pos[1] + 1)
+    else:
+        return (pos[0] + 1, pos[1] + 1)
+
 class SimpleSolver:
     def __init__(self):
         self.board_size = 9
         self.match_list = MATCH_LIST
         self.special_candies = []
         self.simple_candies = [CELL_NAME_TO_VALUE[v] for v in ["BLACK","BLUE","BROWN","GREEN","PINK","WHITE","YELLOW"]]
-        self.striped_candies_h = [CELL_NAME_TO_VALUE[v] for v in ["GREEN_STRIPE_1", "WHITE_STRIPE_1"]]
-        self.striped_candies_v = []
+        self.striped_candies_h = [CELL_NAME_TO_VALUE[v] for v in ["BLACK_STRIPE_1","BLUE_STRIPE_1","BROWN_STRIPE_1","GREEN_STRIPE_1","PINK_STRIPE_1","WHITE_STRIPE_1","YELLOW_STRIPE_1"]]
+        self.striped_candies_v1 = [CELL_NAME_TO_VALUE[v] for v in ["BLACK_STRIPE_2","BLUE_STRIPE_2","BROWN_STRIPE_2","GREEN_STRIPE_2","PINK_STRIPE_2","WHITE_STRIPE_2","YELLOW_STRIPE_2"]]
+        self.striped_candies_v2 = [CELL_NAME_TO_VALUE[v] for v in ["BLACK_STRIPE_3","BLUE_STRIPE_3","BROWN_STRIPE_3","GREEN_STRIPE_3","PINK_STRIPE_3","WHITE_STRIPE_3","YELLOW_STRIPE_3"]]
         self.cannot_move = [CELL_NAME_TO_VALUE[v] for v in
                             ["STONE", "BLACK_JAIL","BLUE_JAIL","BROWN_JAIL","GREEN_JAIL","PINK_JAIL","WHITE_JAIL","YELLOW_JAIL", "NA"]]
         self.striped_candies = self.striped_candies_h[:]
-        self.striped_candies.extend(self.striped_candies_v)
-
+        self.striped_candies.extend(self.striped_candies_v1)
+        self.striped_candies.extend(self.striped_candies_v2)
+        self.flower_candies = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_FLOWER" in v ]
+        self.jail_candies = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_JAIL" in v ]
         self.wrapped_candies = []
-        self.chocolate = []
+        self.chocolate = [CELL_NAME_TO_VALUE[v] for v in ["CONE"]]
         self.game_board = None
         self.potential_start_coords = set()
 
@@ -92,9 +146,9 @@ class SimpleSolver:
         if candy_type in self.simple_candies:
             return 20
         if candy_type in self.striped_candies:
-            return 120
+            return 30
         if candy_type in self.wrapped_candies:
-            return 300
+            return 40
 
         return 0
 
@@ -105,9 +159,9 @@ class SimpleSolver:
             score += self.get_score(candy_value)
 
         if len(candies_coords) == 4:
-            score *= 3
+            score *= 15
         if len(candies_coords) >= 5:
-            score *= 10
+            score *= 50
         return score
 
     def compute_explosions_chocolate(self, board, color):
@@ -119,15 +173,65 @@ class SimpleSolver:
 
         return to_explode
 
+
+    def isValidPosition(self, board, i, j):
+        return  0 <= i < self.board_size and 0 <= j < self.board_size and board[i][j] != -1
+
+    def get_flower_explosion(self, board, coords):
+        to_explode = []
+        
+        candy_type = board[coords[0]][coords[1]]
+        if(candy_type in self.flower_candies):
+            for vv in [
+                getU(coords),
+                getU(getU(coords)),
+                getD(coords),
+                getD(getD(coords)),
+                getUL(coords),
+                getUL(getUL(coords)),
+                getUR(coords),
+                getUR(getUR(coords)),
+                getDL(coords),
+                getDL(getDL(coords)),
+                getDR(coords),
+                getDR(getDR(coords)),
+            ]:
+                if(self.isValidPosition(board, vv)): to_explode.append(vv)
+        return to_explode
+            
     def get_striped_explosion(self, board, coords):
         to_explode = []
         candy_type = board[coords[0]][coords[1]]
         if candy_type in self.striped_candies_h:
             for k in range(self.board_size):
                 to_explode.append((coords[0], k))
-        if candy_type in self.striped_candies_v:
-            for k in range(self.board_size):
-                to_explode.append((k, coords[1]))
+        ## explode right down
+        if candy_type in self.striped_candies_v1:
+            directions = [
+                [(-1,-1), (0, 1)],
+                [(0, -1), (1, 1)]
+            ]
+            for d in range(2):
+                i = coords[0]
+                j = coords[1]
+                while self.isValidPosition(board, i, j):
+                    to_explode.append((i, j))
+                    i += directions[j%2][d][0]
+                    j += directions[j%2][d][1]
+
+        ## explode right up
+        if candy_type in self.striped_candies_v2:
+            directions = [
+                [(0,-1), (-1,1)],
+                [(1,-1), (0, 1)]
+            ]
+            for d in range(2):
+                i = coords[0]
+                j = coords[1]
+                while self.isValidPosition(board, i, j):
+                    to_explode.append((i, j))
+                    i += directions[j%2][d][0]
+                    j += directions[j%2][d][1]
 
         return to_explode
 
@@ -158,7 +262,7 @@ class SimpleSolver:
             for d_index in range(2):
                 i = start[0] + directions[start[1]%2][dirs_index][d_index][0]
                 j = start[1] + directions[start[1]%2][dirs_index][d_index][1]
-                while 0 <= i < self.board_size and 0 <= j < self.board_size and board[i][j] != -1 \
+                while self.isValidPosition(board, i, j) \
                         and self.candy_matches(board[i][j], board[start[0]][start[1]]):
                     open_list.append((i, j))
                     move = (directions[j%2][dirs_index][d_index][0], directions[j%2][dirs_index][d_index][1])
@@ -170,9 +274,10 @@ class SimpleSolver:
                     if element not in to_explode:
                         if board[element[0]][element[1]] in self.striped_candies:
                             to_explode.extend(self.get_striped_explosion(board, element))
+                        # elif board[element[0]][element[1]] in self.flower_candies:
+                        #     to_explode.extend(self.get_flower_explosion(board, element))
                         else:
                             to_explode.append(element)
-
         return to_explode
 
     def compute_explosions(self, start, end, board):
@@ -183,7 +288,7 @@ class SimpleSolver:
             score = 500000
             to_explode = [start, end]
         else:
-            if board[start[0]][start[1]] == CELL_NAME_TO_VALUE["CHOCOLATE"]:  # chocolate
+            if board[start[0]][start[1]] == CELL_NAME_TO_VALUE["CONE"]:  # chocolate
                 to_explode = self.compute_explosions_chocolate(board, board[end[0]][end[1]])
                 chocolate_multiplier = 100
             else:
@@ -192,21 +297,48 @@ class SimpleSolver:
             to_explode.sort(key=(lambda x: x[0]))
             score = self.compute_score(board, to_explode) * chocolate_multiplier
 
-        if len(to_explode) == 4 and board[start[0]][start[1]] != CELL_NAME_TO_VALUE["CHOCOLATE"]:  # striped candy
+
+        if len(to_explode) == 4 and board[start[0]][start[1]] != CELL_NAME_TO_VALUE["CONE"]:  # striped candy
             board[start[0]][start[1]] += 1
             to_explode.remove(start)
 
+        ## remove stones nearby
+        s1 = set(to_explode)
+        orglength = len(s1)
+        for pos in s1:
+            if pos[1] % 2 == 0:
+                dirs = [(-1, -1), (0, -1), (-1, 1), (0, 1), (-1, 0), (1, -1)]
+            else:
+                dirs = [(0, -1), (1, -1), (0, 1), (1, 1), (-1, 0), (1, 0)]
+            for d in dirs:
+                ni = pos[0] + d[0]
+                nj = pos[1] + d[1]
+                if self.isValidPosition(board, ni, nj) and board[ni][nj] == CELL_NAME_TO_VALUE["STONE"]:
+                    to_explode.append((ni,nj))
         #if len(to_explode) > 0:
         #    print '\n\nStarting board:'
         #    dbg.print_board(board)
+        s2 = set(to_explode)
+        afterstone = len(s2)
 
+        score += (150 * (afterstone - orglength))
         # Slide the other candies down after explosions take place
-        for coord in to_explode:
+        for coord in s2:
+            i, j = coord
+            if(board[i][j] in self.jail_candies):
+                # board[i][j] = CELL_NAME_TO_VALUE[CELL_NAMES[board[i][j]].replace("_JAIL", "")]
+                score += 300
+
+        for coord in s2:
             i, j = coord
 
             while i > 0:
                 if board[i-1][j] != -1 and (i-1, j) not in self.potential_start_coords:
                     self.potential_start_coords.add((i, j))
+                ## don't slide down if jail
+                if(board[i-1][j] in self.jail_candies): break
+                if(board[i-1][j] == CELL_NAME_TO_VALUE["STONE"]): break
+
                 board[i][j], board[i-1][j] = board[i-1][j], board[i][j]
                 i -= 1
             board[i][j] = -1
@@ -231,14 +363,14 @@ class SimpleSolver:
                     score, new_board = self.compute_explosions((coord[0], coord[1]), end, new_board)
                     if score > 0:
                         total_score += score + multiplier * 60
-                        multiplier += 2
+                        multiplier += 1.5
             else:
                 for i in range(0, self.board_size):
                     for j in range(0, self.board_size):
                         score, new_board = self.compute_explosions((i, j), end, new_board)
                         if score > 0:
                             total_score += score + multiplier * 60
-                            multiplier += 2
+                            multiplier += 1.5
 
         return total_score, new_board
 
