@@ -1,4 +1,5 @@
 __author__ = 'Kyujin'
+import math
 import matplotlib.pyplot as plt
 import andlib
 from scipy import misc
@@ -13,8 +14,8 @@ model = recognition.ImgRecognizer()
 model.load()
 model.train()
 
-#CUTMODE="xiomi"
-CUTMODE="lucy"
+CUTMODE="xiaomi"
+# CUTMODE="lucy"
 
 SCREEN_NORMALIZE_SIZE = (960, 540)
 CELL_NORMALIZE_SIZE = (50,50)
@@ -25,18 +26,31 @@ def GetCellImage(screenNorm, row, col):
     height, width = screenNorm.shape[:2]
     cellHeight = height / N_ROW
     cellWidth  = width  / N_COL
-    y1 = cellHeight * row + (col%2) * cellHeight / 2.0
-    y2 = y1 + cellHeight
-    x1 = cellWidth * col
-    x2 = x1 + cellWidth
+    y1 = int(round(cellHeight * row + (col%2) * cellHeight / 2.0))
+    y2 = int(round(y1 + cellHeight))
+    x1 = int(round(cellWidth * col))
+    x2 = int(round(x1 + cellWidth))
     return screenNorm[y1:y2, x1:x2, :]
 
-def createMatrixFromScreen(screen):
+def GetCellMidPoint(screenNorm, row, col):
+    height, width = screenNorm.shape[:2]
+    cellHeight = height / N_ROW
+    cellWidth  = width  / N_COL
+    y1 = int(round(cellHeight * row + (col%2) * cellHeight / 2.0))
+    y2 = int(round(y1 + cellHeight))
+    x1 = int(round(cellWidth * col))
+    x2 = int(round(x1 + cellWidth))
+    return ((x1+x2)/2., (y1+y2)/2.)
+
+def readNormalizedScreen(fname):
+    screen=io.imread(fname)[:,:,:3] # remove alpha
     if(CUTMODE == "xiaomi"):
         scNormalized = transform.resize(screen, SCREEN_NORMALIZE_SIZE)[204:805,4:539,:]
     if(CUTMODE == "lucy"):
         scNormalized = transform.resize(screen, SCREEN_NORMALIZE_SIZE)[172:772,4:539,:]
+    return scNormalized
 
+def createMatrixFromScreen(scNormalized):
     matrix = [[-1 for x in range(9)] for x in range(9)]
     for j in range(9):
         for i in range(9 - (j%2)):
