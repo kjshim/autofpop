@@ -24,6 +24,7 @@ def test2():
     mat = ScreenReader.createMatrixFromScreen(sc)
     solver = friendspop.SimpleSolver()
     score, [start, end] = solver.solve_board(mat)
+    print score
     print(start, end)
     x1, y1 = ScreenReader.GetCellMidPoint(sc, start[0], start[1])
     x2, y2 = ScreenReader.GetCellMidPoint(sc, end[0], end[1])

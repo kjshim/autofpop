@@ -47,7 +47,8 @@ class SimpleSolver:
         self.simple_candies = [CELL_NAME_TO_VALUE[v] for v in ["BLACK","BLUE","BROWN","GREEN","PINK","WHITE","YELLOW"]]
         self.striped_candies_h = []
         self.striped_candies_v = []
-
+        self.cannot_move = [CELL_NAME_TO_VALUE[v] for v in
+                            ["STONE", "BLACK_JAIL","BLUE_JAIL","BROWN_JAIL","GREEN_JAIL","PINK_JAIL","WHITE_JAIL","YELLOW_JAIL"]]
         self.striped_candies = self.striped_candies_h[:]
         self.striped_candies.extend(self.striped_candies_v)
 
@@ -110,19 +111,28 @@ class SimpleSolver:
         return False
 
     def compute_explosions_lines(self, board, start):
-        directions = [[(-1, 0), (1, 0)],  # vertical
-                      [(0, -1), (0, 1)]]  # horizontal
+        ## indexing => even/odd, case, 0 or 1
+        directions=[
+                [[(-1, 0), (1, 0)],  # vertical
+                 [(-1, -1), (0, 1)],
+                 [(0, -1), (-1, 1)],],
+                [[(-1, 0), (1, 0)],  # vertical
+                  [(0, -1), (1, 1)],
+                  [(1, -1), (0, 1)],]
+        ]
+
         to_explode = []
-        for dirs in directions:
+        for dirs_index in range(3):
             open_list = [start]
-            for d in dirs:
-                i = start[0] + d[0]
-                j = start[1] + d[1]
+            for d_index in range(2):
+                i = start[0] + directions[start[1]%2][dirs_index][d_index][0]
+                j = start[1] + directions[start[1]%2][dirs_index][d_index][1]
                 while 0 <= i < self.board_size and 0 <= j < self.board_size and board[i][j] != -1 \
                         and self.candy_matches(board[i][j], board[start[0]][start[1]]):
                     open_list.append((i, j))
-                    i += d[0]
-                    j += d[1]
+                    move = (directions[j%2][dirs_index][d_index][0], directions[j%2][dirs_index][d_index][1])
+                    i += move[0]
+                    j += move[1]
 
             if len(open_list) >= 3:
                 for element in open_list:
@@ -208,6 +218,9 @@ class SimpleSolver:
                     or start[1] < 0 or start[1] > self.board_size or end[1] < 0 or end[1] > self.board_size:
                 return -1, [], None
 
+            # cannot move
+            if board[start[0]][start[1]] in self.cannot_move or board[end[0]][end[1]] in self.cannot_move:
+                return -1, [], None
             # swap
             board[start[0]][start[1]], board[end[0]][end[1]] = board[end[0]][end[1]], board[start[0]][start[1]]
             score_start, start_board = self.evaluate_board(start, end, board)
@@ -224,7 +237,11 @@ class SimpleSolver:
         chosen_move = []
         for i in range(0, 8):
             for j in range(0, 8):
-                possible_directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+                if(j%2 == 0):
+                    possible_directions = [(1, 0), (-1, 0), (-1, -1), (0, -1), (-1, 1), (0, 1)]
+                else:
+                    possible_directions = [(1, 0), (-1, 0), (1, -1), (1, 1), (0, 1), (0, -1)]
+
                 for d in possible_directions:
                     score, move, b = self.check_direction((i, j), d)
                     if score >= max_score:
