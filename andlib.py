@@ -3,9 +3,8 @@ import subprocess
 import struct
 import logging
 import re
-from autodoraconfig import C
 
-
+C = {}
 DEVRE = re.compile('/dev/input/event[\d]+')
 
 def StartServer():
@@ -24,22 +23,11 @@ def DetectScreenDevice():
     result = result.lower()
     v = [ l for l in result.split("add device") if l.find('0035') > 0 and l.find('0036') > 0 and (l.find('screen') > 0 or l.find('touch') >0 )]
     logging.debug("Possible screen device: " + str(v))
-    try:
-        devname = DEVRE.findall(v[0])[0]
-        print devname
-        return devname
-    except Exception,e:
-        logging.exception(e)
-
-
 
 def Init():
     StartServer()
-    if not C['SCREEN_DEVICE']:
-        C['SCREEN_DEVICE'] = DetectScreenDevice()
-
-    if not C['TMP_DIR']:
-        C['TMP_DIR'] = GetTempDirectory()
+    C['SCREEN_DEVICE'] = DetectScreenDevice()
+    C['TMP_DIR'] = GetTempDirectory()
 
     logging.debug("Init andlib:" + str(C))
 
