@@ -79,7 +79,7 @@ class ImgRecognizer:
         y = np.array(self.target_values)
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=0.1)
-        n_components = 100
+        n_components = 75
 
         self.pca = RandomizedPCA(n_components=n_components, whiten=True).fit(X_train)
 

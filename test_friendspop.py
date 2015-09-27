@@ -90,6 +90,6 @@ def testRecognition():
     pass
 
 
-# testUsingPhone()
+testUsingPhone()
 
-testDebugLogic()
+# testDebugLogic()

@@ -146,9 +146,7 @@ class SimpleSolver:
     def get_score(self, candy_type):
         if candy_type in self.simple_candies:
             return 20
-        if candy_type in self.striped_candies:
-            return 30
-        if candy_type in self.wrapped_candies:
+        elif candy_type in self.special_candies:
             return 40
 
         return 0
@@ -341,16 +339,13 @@ class SimpleSolver:
             else:
                 to_explode = self.compute_explosions_lines(board, start)
 
-            to_explode.sort(key=(lambda x: x[0]))
+            to_explode = [v for v in to_explode if self.isValidPosition(board, v[0], v[1])]
             score = self.compute_score(board, to_explode) * chocolate_multiplier
 
 
         if len(to_explode) == 4 and board[start[0]][start[1]] != CELL_NAME_TO_VALUE["CONE"]:  # striped candy
             board[start[0]][start[1]] += 1
             to_explode.remove(start)
-
-        # to explode
-        to_explode = [v for v in to_explode if self.isValidPosition(board, v[0], v[1])]
 
         ## remove stones nearby
         s1 = set(to_explode)
