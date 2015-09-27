@@ -143,9 +143,9 @@ class SimpleSolver:
         self.match_list = MATCH_LIST
 
         self.simple_candies = [CELL_NAME_TO_VALUE[v] for v in ["BLACK","BLUE","BROWN","GREEN","PINK","WHITE","YELLOW"]]
-        self.striped_candies_h = [CELL_NAME_TO_VALUE[v] for v in [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_STRIPE1" in v ]]
-        self.striped_candies_v1 = [CELL_NAME_TO_VALUE[v] for v in [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_STRIPE2" in v ]]
-        self.striped_candies_v2 = [CELL_NAME_TO_VALUE[v] for v in [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_STRIPE3" in v ]]
+        self.striped_candies_h = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_STRIPE_1" in v ]
+        self.striped_candies_v1 = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_STRIPE_2" in v ]
+        self.striped_candies_v2 = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_STRIPE_3" in v ]
         self.flower_candies = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_FLOWER" in v ]
         self.snow_candies = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_SNOW" in v ]
         self.tri_candies = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_TRI" in v ]
@@ -242,7 +242,7 @@ class SimpleSolver:
         candy_type = board[coords[0]][coords[1]]
         if candy_type in self.striped_candies_h:
             for k in range(self.board_size):
-                to_explode.append((coords[0], k))
+                to_explode.append((k, coords[1]))
         return to_explode
 
     def get_stripe2_explosion(self, board, coords):
@@ -306,6 +306,7 @@ class SimpleSolver:
         ]
 
         to_explode = set([])
+        cum_open_list_counter = 0
         for dirs_index in range(3):
             open_list = [start]
             for d_index in range(2):
@@ -318,31 +319,33 @@ class SimpleSolver:
                     i += move[0]
                     j += move[1]
 
-        if len(open_list) >= 3:
-            processed = set([])
-            to_explode.update(set(open_list))
-            while len(processed) != len(to_explode):
-                remaining = to_explode.difference(processed)
-                processed.update(to_explode)
-                for element in remaining:
-                    cell = board[element[0]][element[1]]
-                    if cell in self.striped_candies_h:
-                        to_explode.update(set(self.get_stripe1_explosion(board, element)))
-                    elif cell in self.striped_candies_v1:
-                        to_explode.update(set(self.get_stripe2_explosion(board, element)))
-                    elif cell in self.striped_candies_v2:
-                        to_explode.update(set(self.get_stripe3_explosion(board, element)))
-                    elif cell in self.flower_candies:
-                        to_explode.update(set(self.get_flower_explosion(board, element)))
-                    elif cell in self.snow_candies:
-                        to_explode.update(set(self.get_snow_explosion(board, element)))
-                    elif cell in self.tri_candies:
-                        to_explode.update(set(self.get_tri_explosion(board, element)))
+            if len(open_list) >= 3:
+                cum_open_list_counter += len(open_list)
+                processed = set([])
+                to_explode.update(set(open_list))
+                while len(processed) != len(to_explode):
+                    remaining = to_explode.difference(processed)
+                    processed.update(to_explode)
+                    for element in remaining:
+                        cell = board[element[0]][element[1]]
+                        if cell in self.striped_candies_h:
+                            to_explode.update(set(self.get_stripe1_explosion(board, element)))
+                        elif cell in self.striped_candies_v1:
+                            to_explode.update(set(self.get_stripe2_explosion(board, element)))
+                        elif cell in self.striped_candies_v2:
+                            to_explode.update(set(self.get_stripe3_explosion(board, element)))
+                        elif cell in self.flower_candies:
+                            to_explode.update(set(self.get_flower_explosion(board, element)))
+                        elif cell in self.snow_candies:
+                            to_explode.update(set(self.get_snow_explosion(board, element)))
+                        elif cell in self.tri_candies:
+                            to_explode.update(set(self.get_tri_explosion(board, element)))
 
-        if len(open_list) >= 4 and board[start[0]][start[1]] != CELL_NAME_TO_VALUE["CONE"]:  # got special candy
-            to_explode.remove(start)
+            if len(open_list) >= 4 and board[start[0]][start[1]] != CELL_NAME_TO_VALUE["CONE"]:  # got special candy
+                to_explode.remove(start)
 
-
+        if DEBUG_EXPLOSIONS and cum_open_list_counter > 0:
+            print "CumOpenListCounter : ", cum_open_list_counter
         return to_explode
 
     def compute_explosions(self, start, end, board):

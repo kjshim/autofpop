@@ -42,7 +42,7 @@ def test2():
 def testUsingPhone():
     andlib.Init()
     while True:
-
+        print "##################################################################################################"
         try:
             filelist = glob.glob("data/PredictionLog/*.png")
             for f in filelist:
@@ -60,6 +60,11 @@ def testUsingPhone():
         score, [start, end] = solver.solve_board(mat)
         print score
         print(start, end)
+
+        friendspop.DEBUG_EXPLOSIONS = True
+        score, _, endboard =  solver.check_direction(start, ((end[0] - start[0]), (end[1] - start[1])))
+        friendspop.DEBUG_EXPLOSIONS = False
+
         x1, y1 = ScreenReader.GetCellMidPoint(sc, start[0], start[1])
         x2, y2 = ScreenReader.GetCellMidPoint(sc, end[0], end[1])
         print((x1,y1), (x2,y2))
@@ -68,15 +73,16 @@ def testUsingPhone():
         plt.show()
 
 def testDebugLogic():
-    mat = [[4, 1, 2, 1, 3, 3, 1, 7, 3],
-         [6, 4, 7, 1, 4, 1, 6, 1, 4],
-         [1, 1, 0, 6, 24, 2, 0, 1, 1],
-         [4, 1, 0, 46, 1, 3, 4, 3, 4],
-         [1, 0, 6, 0, 3, 1, 6, 1, 3],
-         [6, 7, 1, 4, 1, 1, 0, 7, 3],
-         [0, 3, 6, 4, 7, 6, 0, 0, 6],
-         [3, 4, 0, 3, 7, 1, 7, 0, 3],
-         [-1, -1, 6, -1, 1, -1, 1, -1, -1]]
+    mat = [[4, 3, 7, 4, 4, 1, 1, 7, 3],
+             [6, 1, 0, 3, 0, 3, 6, 1, 4],
+             [1, 4, 7, 0, 4, 3, 0, 1, 1],
+             [4, 1, 7, 3, 6, 1, 4, 3, 4],
+             [1, 1, 2, 18, 3, 2, 6, 1, 3],
+             [6, 7, 7, 6, 4, 1, 0, 7, 3],
+             [0, 3, 0, 4, 24, 6, 0, 0, 6],
+             [3, 4, 0, 3, 7, 1, 7, 0, 3],
+             [-1, -1, 6, -1, 1, -1, 5, -1, -1]]
+    # friendspop.DEBUG_EXPLOSIONS = True
     solver = friendspop.SimpleSolver()
     solver.game_board = mat
     max_score, chosen_move = solver.solve_board(deepcopy(mat))
@@ -86,9 +92,29 @@ def testDebugLogic():
     solver.game_board = mat
 
     friendspop.DEBUG_EXPLOSIONS = True
+
+    chosen_move = [( 7, 4), (6,5)]
     score, _, endboard =  solver.check_direction(chosen_move[0], ((chosen_move[1][0] - chosen_move[0][0]), (chosen_move[1][1] - chosen_move[0][1])))
     print score
     friendspop.print_board(endboard)
 
+def testDebugLogic2():
+    mat = [[4, 3, 7, 4, 4, 1, 1, 7, 3],
+             [6, 1, 0, 3, 0, 3, 6, 1, 4],
+             [1, 4, 7, 0, 4, 3, 0, 1, 1],
+             [4, 1, 7, 3, 6, 1, 4, 3, 4],
+             [1, 1, 2, 18, 3, 2, 6, 1, 3],
+             [6, 7, 7, 6, 4, 1, 0, 7, 3],
+             [0, 3, 0, 4, 24, 6, 0, 0, 6],
+             [3, 4, 0, 3, 7, 1, 7, 0, 3],
+             [-1, -1, 6, -1, 1, -1, 5, -1, -1]]
+    # friendspop.DEBUG_EXPLOSIONS = True
+    solver = friendspop.SimpleSolver()
+    solver.game_board = mat
+    friendspop.DEBUG_EXPLOSIONS = True
+    chosen_move = [( 7, 4), (6,5)]
+    score, _, endboard =  solver.check_direction(chosen_move[0], ((chosen_move[1][0] - chosen_move[0][0]), (chosen_move[1][1] - chosen_move[0][1])))
+    print score
+    friendspop.print_board(endboard)
 # testUsingPhone()
-testDebugLogic()
+testDebugLogic2()
