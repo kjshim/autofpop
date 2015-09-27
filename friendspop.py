@@ -85,9 +85,18 @@ MATCH_LIST_NAME = [
 MATCH_LIST = [ [CELL_NAME_TO_VALUE[v] for v in ml] for ml in MATCH_LIST_NAME]
 
 def print_board(board):
-    for line in board:
-        for elem in line:
-            print CELL_NAMES[elem] + '\t\t',
+    for i, line in enumerate(board):
+        for j, elem in enumerate(line):
+            if(j%2 == 0):
+                print "%8s"%CELL_NAMES[elem] + '\t\t',
+            else:
+                print '\t\t\t',
+        print
+        for j, elem in enumerate(line):
+            if(j%2 == 1):
+                print "%8s"%CELL_NAMES[elem] + '\t\t',
+            else:
+                print '\t\t\t',
         print
 
 def getU(pos):

@@ -1,2 +1,1 @@
-autodora
-========
+auto solver for friends pop
