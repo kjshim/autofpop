@@ -77,15 +77,19 @@ def testDebugLogic():
              [-1, 3, 4, 6, 1, 6, 6, 1, -1],
              [-1, -1, -1, -1, -1, -1, -1, -1, -1],
              [12, -1, 5, -1, 5, -1, 5, -1, 5]]
-
+    friendspop.print_board(mat)
     solver = friendspop.SimpleSolver()
     solver.game_board = mat
-    solver.check_direction((3, 7), (1, 0))
+    score, (p1, p2), endboard =  solver.check_direction((1, 1), friendspop.getD((1,1)))
+    print score
+    print (p1, p2)
+
+    friendspop.print_board(endboard)
 
 def testRecognition():
     pass
 
 
-testUsingPhone()
+# testUsingPhone()
 
-# testDebugLogic()
+testDebugLogic()
