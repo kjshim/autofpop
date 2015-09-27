@@ -8,7 +8,7 @@ import andlib
 import datetime
 from pprint import pprint
 import glob, os
-
+from copy import deepcopy
 
 def test1():
     sampledata = [[2, 2, 7, 7, 2, 6, 0, 2, 4],
@@ -68,28 +68,27 @@ def testUsingPhone():
         plt.show()
 
 def testDebugLogic():
-    mat =   [[5, 5, -1, 5, 5, 5, 5, 5, 5],
-             [-1, 7, -1, 3, -1, 4, -1, 3, -1],
-             [-1, 6, 4, 2, 15, 4, 4, 7, -1],
-             [-1, 3, 7, 17, 6, 3, 6, 3, -1],
-             [-1, 1, 10, 6, 18, 1, 1, 1, -1],
-             [-1, 4, 3, 1, 15, 2, 6, 3, -1],
-             [-1, 3, 4, 6, 1, 6, 6, 1, -1],
-             [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-             [12, -1, 5, -1, 5, -1, 5, -1, 5]]
-    friendspop.print_board(mat)
+    mat = [[4, 1, 2, 1, 3, 3, 1, 7, 3],
+         [6, 4, 7, 1, 4, 1, 6, 1, 4],
+         [1, 1, 0, 6, 24, 2, 0, 1, 1],
+         [4, 1, 0, 46, 1, 3, 4, 3, 4],
+         [1, 0, 6, 0, 3, 1, 6, 1, 3],
+         [6, 7, 1, 4, 1, 1, 0, 7, 3],
+         [0, 3, 6, 4, 7, 6, 0, 0, 6],
+         [3, 4, 0, 3, 7, 1, 7, 0, 3],
+         [-1, -1, 6, -1, 1, -1, 1, -1, -1]]
     solver = friendspop.SimpleSolver()
     solver.game_board = mat
-    score, (p1, p2), endboard =  solver.check_direction((1, 1), friendspop.getD((1,1)))
-    print score
-    print (p1, p2)
+    max_score, chosen_move = solver.solve_board(deepcopy(mat))
 
+    friendspop.print_board(mat, chosen_move)
+    print max_score, chosen_move
+    solver.game_board = mat
+
+    friendspop.DEBUG_EXPLOSIONS = True
+    score, _, endboard =  solver.check_direction(chosen_move[0], ((chosen_move[1][0] - chosen_move[0][0]), (chosen_move[1][1] - chosen_move[0][1])))
+    print score
     friendspop.print_board(endboard)
 
-def testRecognition():
-    pass
-
-
-testUsingPhone()
-
-# testDebugLogic()
+# testUsingPhone()
+testDebugLogic()
