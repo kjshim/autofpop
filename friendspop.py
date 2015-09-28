@@ -151,6 +151,7 @@ class SimpleSolver:
         self.tri_candies = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_TRI" in v ]
         self.jail_candies = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_JAIL" in v ]
         self.chocolate = [CELL_NAME_TO_VALUE[v] for v in ["CONE"]]
+        self.noncandies = [CELL_NAME_TO_VALUE[v] for v in ["STONE", "NA"]]
 
         self.cannot_move = [CELL_NAME_TO_VALUE[v] for v in
                             ["STONE", "BLACK_JAIL","BLUE_JAIL","BROWN_JAIL","GREEN_JAIL","PINK_JAIL","WHITE_JAIL","YELLOW_JAIL", "NA"]]
@@ -167,18 +168,6 @@ class SimpleSolver:
             return 40
 
         return 0
-
-    def compute_score(self, board, candies_coords):
-        score = 0
-        for coords in candies_coords:
-            candy_value = board[coords[0]][coords[1]]
-            score += self.get_score(candy_value)
-
-        if len(candies_coords) == 4:
-            score *= 15
-        if len(candies_coords) >= 5:
-            score *= 100
-        return score
 
     def compute_explosions_chocolate(self, board, color):
         to_explode = []
@@ -212,17 +201,18 @@ class SimpleSolver:
     def get_snow_explosion(self, board, p):
         return [
             getU(p),
+            getU(getU(p)),
             getUL(p),
-            getU(getUL(p)),
-            getDL(getUL(p)),
+            getUL(getUL(p)),
             getDL(p),
-            getD(getDL(p)),
-            getD(p),
-            getDR(p),
-            getD(getDR(p)),
+            getDL(getDL(p)),
             getUR(p),
-            getDR(getUR(p)),
-            getU(getUR(p)),
+            getUR(getUR(p)),
+            getD(p),
+            getD(getD(p)),
+            getDR(p),
+            getDR(getDR(p)),
+
         ]
 
     def get_tri_explosion(self, board, p):
@@ -274,23 +264,20 @@ class SimpleSolver:
             while 0 <= i < self.board_size and 0 <= j < self.board_size:
                 if board[i][j] != -1:
                     to_explode.append((i, j))
-                i, j = getUL((i, j))
+                i, j = getUR((i, j))
 
             i, j = coords
             while 0 <= i < self.board_size and 0 <= j < self.board_size:
                 if board[i][j] != -1:
                     to_explode.append((i, j))
-                i, j = getDR((i, j))
+                i, j = getDL((i, j))
 
         return to_explode
 
     def candy_matches(self, type1, type2):
-        if type1 == type2:
-            return True
-        else:
-            for match in self.match_list:
-                if type1 in match and type2 in match:
-                    return True
+        for match in self.match_list:
+            if type1 in match and type2 in match:
+                return True
 
         return False
 
@@ -327,43 +314,39 @@ class SimpleSolver:
                     remaining = to_explode.difference(processed)
                     processed.update(to_explode)
                     for element in remaining:
-                        cell = board[element[0]][element[1]]
-                        if cell in self.striped_candies_h:
-                            to_explode.update(set(self.get_stripe1_explosion(board, element)))
-                        elif cell in self.striped_candies_v1:
-                            to_explode.update(set(self.get_stripe2_explosion(board, element)))
-                        elif cell in self.striped_candies_v2:
-                            to_explode.update(set(self.get_stripe3_explosion(board, element)))
-                        elif cell in self.flower_candies:
-                            to_explode.update(set(self.get_flower_explosion(board, element)))
-                        elif cell in self.snow_candies:
-                            to_explode.update(set(self.get_snow_explosion(board, element)))
-                        elif cell in self.tri_candies:
-                            to_explode.update(set(self.get_tri_explosion(board, element)))
+                        if(self.isValidPosition(board, element[0], element[1])):
+                            cell = board[element[0]][element[1]]
+                            if cell in self.striped_candies_h:
+                                to_explode.update(set(self.get_stripe1_explosion(board, element)))
+                            elif cell in self.striped_candies_v1:
+                                to_explode.update(set(self.get_stripe2_explosion(board, element)))
+                            elif cell in self.striped_candies_v2:
+                                to_explode.update(set(self.get_stripe3_explosion(board, element)))
+                            elif cell in self.flower_candies:
+                                to_explode.update(set(self.get_flower_explosion(board, element)))
+                            elif cell in self.snow_candies:
+                                to_explode.update(set(self.get_snow_explosion(board, element)))
+                            elif cell in self.tri_candies:
+                                to_explode.update(set(self.get_tri_explosion(board, element)))
 
             if len(open_list) >= 4 and board[start[0]][start[1]] != CELL_NAME_TO_VALUE["CONE"]:  # got special candy
                 to_explode.remove(start)
 
         if DEBUG_EXPLOSIONS and cum_open_list_counter > 0:
-            print "CumOpenListCounter : ", cum_open_list_counter
-        return to_explode
+            print "CumOpenListCounter : ", cum_open_list_counter, to_explode
+        return to_explode, cum_open_list_counter
 
     def compute_explosions(self, start, end, board):
         chocolate_multiplier = 1
         to_explode = []
-
-        if board[start[0]][start[1]] in self.special_candies and board[end[0]][end[1]] in self.special_candies:
-            score = 500000
-            to_explode = [start, end]
+        line_explosion_size = 0
+        if end and board[start[0]][start[1]] == CELL_NAME_TO_VALUE["CONE"]:  # chocolate
+            to_explode = self.compute_explosions_chocolate(board, board[end[0]][end[1]])
         else:
-            if board[start[0]][start[1]] == CELL_NAME_TO_VALUE["CONE"]:  # chocolate
-                to_explode = self.compute_explosions_chocolate(board, board[end[0]][end[1]])
-                chocolate_multiplier = 100
-            else:
-                to_explode = self.compute_explosions_lines(board, start)
+            to_explode, line_explosion_size = self.compute_explosions_lines(board, start)
 
-            to_explode = [v for v in to_explode if self.isValidPosition(board, v[0], v[1])]
-            score = self.compute_score(board, to_explode) * chocolate_multiplier
+        to_explode = [v for v in to_explode if self.isValidPosition(board, v[0], v[1])]
+        score = len(to_explode) * 10
 
         if DEBUG_EXPLOSIONS and to_explode:
             print "compute explosions : "
@@ -390,7 +373,13 @@ class SimpleSolver:
         for (i, j) in jail_cells:
             to_explode.remove((i, j))
             board[i][j] = CELL_NAME_TO_VALUE[CELL_NAMES[board[i][j]].replace("_JAIL", "")]
-        score += 300 * jail_removal
+        score += 200 * jail_removal
+
+        if line_explosion_size > 0:
+            if(line_explosion_size == 4):
+                score += 500
+            elif line_explosion_size >= 5:
+                score += 10000
 
         #if len(to_explode) > 0:
         #    print '\n\nStarting board:'
@@ -398,12 +387,12 @@ class SimpleSolver:
         s2 = sorted(list(set(to_explode)))
         afterstone = len(s2)
 
-        score += (150 * (afterstone - orglength))
-        # Slide the other candies down after explosions take place
+        nStone = (afterstone - orglength)
+        score += (150 * nStone)
+        # Slide the other candies down after explosions take place'
 
         for coord in s2:
             i, j = coord
-
             while i > 0:
                 if board[i-1][j] != -1 and (i-1, j) not in self.potential_start_coords:
                     self.potential_start_coords.add((i, j))
@@ -416,6 +405,7 @@ class SimpleSolver:
             board[i][j] = -1
 
         if DEBUG_EXPLOSIONS and to_explode:
+            print "line explosion size : ", line_explosion_size, " stone : ", nStone, " jail: ", jail_removal
             print "after slide down : *potential start*"
             print_board(board, self.potential_start_coords)
 
@@ -437,17 +427,17 @@ class SimpleSolver:
                 self.potential_start_coords = set()
                 score = 0
                 for coord in potential_start:
-                    score, new_board = self.compute_explosions((coord[0], coord[1]), end, new_board)
+                    score, new_board = self.compute_explosions((coord[0], coord[1]), None, new_board)
                     if score > 0:
-                        total_score += score + multiplier * 60
-                        multiplier += 1.5
+                        total_score += (score * multiplier)
+                        multiplier += 2
             else:
                 for i in range(0, self.board_size):
                     for j in range(0, self.board_size):
-                        score, new_board = self.compute_explosions((i, j), end, new_board)
+                        score, new_board = self.compute_explosions((i, j), None, new_board)
                         if score > 0:
-                            total_score += score + multiplier * 60
-                            multiplier += 1.5
+                            total_score += (score * multiplier)
+                            multiplier += 2
 
         return total_score, new_board
 

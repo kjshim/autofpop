@@ -73,15 +73,15 @@ def testUsingPhone():
         plt.show()
 
 def testDebugLogic():
-    mat = [[4, 3, 7, 4, 4, 1, 1, 7, 3],
-             [6, 1, 0, 3, 0, 3, 6, 1, 4],
-             [1, 4, 7, 0, 4, 3, 0, 1, 1],
-             [4, 1, 7, 3, 6, 1, 4, 3, 4],
-             [1, 1, 2, 18, 3, 2, 6, 1, 3],
-             [6, 7, 7, 6, 4, 1, 0, 7, 3],
-             [0, 3, 0, 4, 24, 6, 0, 0, 6],
-             [3, 4, 0, 3, 7, 1, 7, 0, 3],
-             [-1, -1, 6, -1, 1, -1, 5, -1, -1]]
+    mat =[[1, 0, 7, 4, 3, 6, 4, 7, 6],
+             [7, 2, 1, 3, 0, 4, 1, 1, 3],
+             [6, 6, 3, 4, 2, 7, 6, 7, 4],
+             [6, 0, 7, 0, 3, 7, 6, 1, 4],
+             [29, 3, 6, 3, 2, 4, 0, 3, 3],
+             [6, 7, 3, 7, 1, 4, 4, 1, 3],
+             [2, 3, 7, 4, 6, 1, 6, 7, 6],
+             [3, 4, 1, 3, 7, 34, 0, 0, 3],
+             [-1, -1, 0, -1, 3, -1, 1, -1, -1]]
     # friendspop.DEBUG_EXPLOSIONS = True
     solver = friendspop.SimpleSolver()
     solver.game_board = mat
@@ -92,8 +92,6 @@ def testDebugLogic():
     solver.game_board = mat
 
     friendspop.DEBUG_EXPLOSIONS = True
-
-    chosen_move = [( 7, 4), (6,5)]
     score, _, endboard =  solver.check_direction(chosen_move[0], ((chosen_move[1][0] - chosen_move[0][0]), (chosen_move[1][1] - chosen_move[0][1])))
     print score
     friendspop.print_board(endboard)
@@ -116,5 +114,6 @@ def testDebugLogic2():
     score, _, endboard =  solver.check_direction(chosen_move[0], ((chosen_move[1][0] - chosen_move[0][0]), (chosen_move[1][1] - chosen_move[0][1])))
     print score
     friendspop.print_board(endboard)
-# testUsingPhone()
-testDebugLogic2()
+testUsingPhone()
+# testDebugLogic2()
+# testDebugLogic()

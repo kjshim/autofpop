@@ -9,9 +9,6 @@ from skimage import transform
 
 ## train model
 import recognition
-model = recognition.ImgRecognizer()
-model.load()
-model.train()
 
 CUTMODE="xiaomi"
 # CUTMODE="lucy"
@@ -54,6 +51,10 @@ def normalizeImage(screen):
 
 
 def createMatrixFromScreen(scNormalized):
+    model = recognition.ImgRecognizer()
+    model.load()
+    model.train()
+
     matrix = [[-1 for x in range(9)] for x in range(9)]
     for j in range(9):
         for i in range(9 - (j%2)):
