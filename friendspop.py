@@ -73,6 +73,14 @@ CELL_NAMES = {
     69:"WHITE_TRI",
     70:"YELLOW_TRI",
 
+    71:"BLACK_BOMB",
+    72:"BLUE_BOMB",
+    73:"BROWN_BOMB",
+    74:"GREEN_BOMB",
+    75:"PINK_BOMB",
+    76:"WHITE_BOMB",
+    77:"YELLOW_BOMB",
+
     100:"CONE",
 }
 
@@ -150,8 +158,10 @@ class SimpleSolver:
         self.snow_candies = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_SNOW" in v ]
         self.tri_candies = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_TRI" in v ]
         self.jail_candies = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_JAIL" in v ]
+        self.bomb_candies = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_BOMB" in v ]
         self.chocolate = [CELL_NAME_TO_VALUE[v] for v in ["CONE"]]
         self.noncandies = [CELL_NAME_TO_VALUE[v] for v in ["STONE", "NA"]]
+
 
         self.cannot_move = [CELL_NAME_TO_VALUE[v] for v in
                             ["STONE", "BLACK_JAIL","BLUE_JAIL","BROWN_JAIL","GREEN_JAIL","PINK_JAIL","WHITE_JAIL","YELLOW_JAIL", "NA"]]
@@ -352,6 +362,10 @@ class SimpleSolver:
             print "compute explosions : "
             print_board(board, to_explode)
 
+        ## count bomb
+        for (i, j) in to_explode:
+            if board[i][j] in self.bomb_candies:
+                score += 200
 
         ## remove stones nearby
         s1 = set(to_explode)
