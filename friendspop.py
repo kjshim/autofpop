@@ -85,7 +85,7 @@ CELL_NAMES = {
 }
 
 CELL_NAME_TO_VALUE = dict([(v,k) for k,v in CELL_NAMES.items()])
-POSTFIX = ["", "_JAIL", "_STRIPE_1", "_STRIPE_2", "_STRIPE_3", "_FLOWER", "_SNOW", "_TRI"]
+POSTFIX = ["", "_JAIL", "_STRIPE_1", "_STRIPE_2", "_STRIPE_3", "_FLOWER", "_SNOW", "_TRI", "_BOMB"]
 COLORS  = ["BLACK", "BLUE", "BROWN", "PINK", "WHITE", "YELLOW", "GREEN"]
 MATCH_LIST_NAME = [
     [ color + post for post in POSTFIX]
@@ -365,7 +365,7 @@ class SimpleSolver:
         ## count bomb
         for (i, j) in to_explode:
             if board[i][j] in self.bomb_candies:
-                score += 200
+                score +=400
 
         ## remove stones nearby
         s1 = set(to_explode)
