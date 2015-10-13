@@ -41,8 +41,15 @@ $ python test_friendspop.py
   * Do just like the result
   * Close the result window
 
+# Test
+
+```
+$ nosetests
+```
+
 # Files to check
 
+* andlib.py
 * ScreenReader.py
 * recognition.py
 * friendspop.py
