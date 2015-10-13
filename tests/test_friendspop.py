@@ -35,11 +35,13 @@ def test2():
     x1, y1 = ScreenReader.GetCellMidPoint(sc, start[0], start[1])
     x2, y2 = ScreenReader.GetCellMidPoint(sc, end[0], end[1])
     print((x1,y1), (x2,y2))
+    return
     plt.imshow(sc)
     plt.plot([x1,x2], [y1,y2], 'k-', lw=2)
     plt.show()
 
 def testUsingPhone():
+    return
     andlib.Init()
     while True:
         print "##################################################################################################"
@@ -114,6 +116,3 @@ def testDebugLogic2():
     score, _, endboard =  solver.check_direction(chosen_move[0], ((chosen_move[1][0] - chosen_move[0][0]), (chosen_move[1][1] - chosen_move[0][1])))
     print score
     friendspop.print_board(endboard)
-testUsingPhone()
-# testDebugLogic2()
-# testDebugLogic()
