@@ -1,6 +1,2 @@
-/*.pyc
-/dist
-/build
-/img.raw
-/license.dat
-.ipynb_checkpoints
+*.pyc
+/data/PredictionLog
