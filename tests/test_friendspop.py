@@ -1,10 +1,10 @@
-import friendspop
-import recognition
-import ScreenReader
+from autofpop import friendspop
+from autofpop import recognition
+from autofpop import ScreenReader
 import matplotlib.pyplot as plt
 from skimage import draw
 from skimage import io
-import andlib
+from autofpop import andlib
 import datetime
 from pprint import pprint
 import glob, os
