@@ -365,7 +365,7 @@ class SimpleSolver:
         ## count bomb
         for (i, j) in to_explode:
             if board[i][j] in self.bomb_candies:
-                score +=400
+                score += 50
 
         ## remove stones nearby
         s1 = set(to_explode)
