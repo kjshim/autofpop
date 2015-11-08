@@ -7,15 +7,15 @@ def getTimeStr():
 
 DEBUG_EXPLOSIONS = False
 CELL_NAMES = {
-    -1: "NA",
-    0:"BLACK",
-    1:"BLUE",
-    2:"BROWN",
-    3:"GREEN",
-    4:"PINK",
-    5:"STONE",
-    6:"WHITE",
-    7:"YELLOW",
+    -1: "NA_BASE",
+    0:"BLACK_BASE",
+    1:"BLUE_BASE",
+    2:"BROWN_BASE",
+    3:"GREEN_BASE",
+    4:"PINK_BASE",
+    5:"STONE_BASE",
+    6:"WHITE_BASE",
+    7:"YELLOW_BASE",
     8:"BLACK_JAIL",
     9:"BLUE_JAIL",
     10:"BROWN_JAIL",
@@ -23,7 +23,7 @@ CELL_NAMES = {
     12:"PINK_JAIL",
     14:"WHITE_JAIL",
     15:"YELLOW_JAIL",
-    16:"MAPSCROLL",
+    16:"MAPSCROLL_BASE",
     
     17:"BLACK_STRIPE_1",
     18:"BLUE_STRIPE_1",
@@ -85,7 +85,7 @@ CELL_NAMES = {
 }
 
 CELL_NAME_TO_VALUE = dict([(v,k) for k,v in CELL_NAMES.items()])
-POSTFIX = ["", "_JAIL", "_STRIPE_1", "_STRIPE_2", "_STRIPE_3", "_FLOWER", "_SNOW", "_TRI", "_BOMB"]
+POSTFIX = ["_BASE", "_JAIL", "_STRIPE_1", "_STRIPE_2", "_STRIPE_3", "_FLOWER", "_SNOW", "_TRI", "_BOMB"]
 COLORS  = ["BLACK", "BLUE", "BROWN", "PINK", "WHITE", "YELLOW", "GREEN"]
 MATCH_LIST_NAME = [
     [ color + post for post in POSTFIX]
