@@ -6,6 +6,7 @@ from skimage import transform
 from skimage import color
 from skimage.feature import match_template
 import os
+import glob
 from skimage import exposure
 from skimage import feature
 from skimage import color
@@ -52,9 +53,9 @@ class ImgRecognizer:
         self.downscale_res = (50, 50)
 
     def _load(self, path, target_value):
-        training_imgs = os.listdir(path)
+        training_imgs = glob.glob(os.path.join(path, '*.png'))
         for f in training_imgs:
-            img = io.imread(path+'/'+f)
+            img = io.imread(f)
             self.training_data.append(self.img2feat(img))
             self.target_values.append(target_value)
 
