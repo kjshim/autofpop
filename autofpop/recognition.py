@@ -118,12 +118,18 @@ class ImgRecognizer:
         return result
 
     def predict(self, img):
+        result = self.predict_(img)
+        self.save_image_log(img, result)
+        return result
+
+    def predict_(self, img):
         feat = self.img2feat(img)
         afterpca = self.pca.transform(feat)
         result = int(self.clf.predict(afterpca))
+        return result
+
+    def save_image_log(self, img, result):
         outdir = os.path.join("data/PredictionLog")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         io.imsave(os.path.join(outdir,  CELL_NAMES[result] + "_" + str(uuid.uuid4()) + ".png"), transform.resize(img, self.downscale_res))
-        return result
-
