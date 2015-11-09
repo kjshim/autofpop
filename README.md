@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/kjshim/autofpop.svg?branch=master)](https://travis-ci.org/kjshim/autofpop)
+
 Auto solver for friends pop
 
 # Prerequisites
