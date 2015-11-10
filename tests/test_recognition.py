@@ -238,4 +238,4 @@ def test_Recognizer4():
 	type2.simplify = type2.lda_
 	type2.load(); type2.train(); type2.dump()
 
-	assert False
+	# assert False

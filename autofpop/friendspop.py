@@ -81,7 +81,7 @@ CELL_NAMES = {
     76:"WHITE_BOMB",
     77:"YELLOW_BOMB",
 
-    100:"CONE",
+    100:"CONE_BASE",
 }
 
 CELL_NAME_TO_VALUE = dict([(v,k) for k,v in CELL_NAMES.items()])
@@ -150,7 +150,7 @@ class SimpleSolver:
         self.board_size = 9
         self.match_list = MATCH_LIST
 
-        self.simple_candies = [CELL_NAME_TO_VALUE[v] for v in ["BLACK","BLUE","BROWN","GREEN","PINK","WHITE","YELLOW"]]
+        self.simple_candies = [CELL_NAME_TO_VALUE[v] for v in ["BLACK_BASE","BLUE_BASE","BROWN_BASE","GREEN_BASE","PINK_BASE","WHITE_BASE","YELLOW_BASE"]]
         self.striped_candies_h = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_STRIPE_1" in v ]
         self.striped_candies_v1 = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_STRIPE_2" in v ]
         self.striped_candies_v2 = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_STRIPE_3" in v ]
@@ -159,12 +159,12 @@ class SimpleSolver:
         self.tri_candies = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_TRI" in v ]
         self.jail_candies = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_JAIL" in v ]
         self.bomb_candies = [CELL_NAME_TO_VALUE[v] for v in CELL_NAMES.values() if "_BOMB" in v ]
-        self.chocolate = [CELL_NAME_TO_VALUE[v] for v in ["CONE"]]
-        self.noncandies = [CELL_NAME_TO_VALUE[v] for v in ["STONE", "NA"]]
+        self.chocolate = [CELL_NAME_TO_VALUE[v] for v in ["CONE_BASE"]]
+        self.noncandies = [CELL_NAME_TO_VALUE[v] for v in ["STONE_BASE", "NA_BASE"]]
 
 
         self.cannot_move = [CELL_NAME_TO_VALUE[v] for v in
-                            ["STONE", "BLACK_JAIL","BLUE_JAIL","BROWN_JAIL","GREEN_JAIL","PINK_JAIL","WHITE_JAIL","YELLOW_JAIL", "NA"]]
+                            ["STONE_BASE", "BLACK_JAIL","BLUE_JAIL","BROWN_JAIL","GREEN_JAIL","PINK_JAIL","WHITE_JAIL","YELLOW_JAIL", "NA_BASE"]]
         self.special_candies = self.striped_candies_h + self.striped_candies_v1 + self.striped_candies_v2 + \
             self.flower_candies + self.snow_candies + self.tri_candies + self.chocolate
 
@@ -339,7 +339,7 @@ class SimpleSolver:
                             elif cell in self.tri_candies:
                                 to_explode.update(set(self.get_tri_explosion(board, element)))
 
-            if len(open_list) >= 4 and board[start[0]][start[1]] != CELL_NAME_TO_VALUE["CONE"]:  # got special candy
+            if len(open_list) >= 4 and board[start[0]][start[1]] != CELL_NAME_TO_VALUE["CONE_BASE"]:  # got special candy
                 to_explode.remove(start)
 
         if DEBUG_EXPLOSIONS and cum_open_list_counter > 0:
@@ -350,7 +350,7 @@ class SimpleSolver:
         chocolate_multiplier = 1
         to_explode = []
         line_explosion_size = 0
-        if end and board[start[0]][start[1]] == CELL_NAME_TO_VALUE["CONE"]:  # chocolate
+        if end and board[start[0]][start[1]] == CELL_NAME_TO_VALUE["CONE_BASE"]:  # chocolate
             to_explode = self.compute_explosions_chocolate(board, board[end[0]][end[1]])
         else:
             to_explode, line_explosion_size = self.compute_explosions_lines(board, start)
@@ -378,7 +378,7 @@ class SimpleSolver:
             for d in dirs:
                 ni = pos[0] + d[0]
                 nj = pos[1] + d[1]
-                if self.isValidPosition(board, ni, nj) and board[ni][nj] == CELL_NAME_TO_VALUE["STONE"]:
+                if self.isValidPosition(board, ni, nj) and board[ni][nj] == CELL_NAME_TO_VALUE["STONE_BASE"]:
                     to_explode.append((ni,nj))
 
         jail_cells = [ pos for pos in to_explode if (board[pos[0]][pos[1]] in self.jail_candies) ]
@@ -412,7 +412,7 @@ class SimpleSolver:
                     self.potential_start_coords.add((i, j))
                 ## don't slide down if jail
                 if(board[i-1][j] in self.jail_candies): break
-                if(board[i-1][j] == CELL_NAME_TO_VALUE["STONE"]): break
+                if(board[i-1][j] == CELL_NAME_TO_VALUE["STONE_BASE"]): break
 
                 board[i][j], board[i-1][j] = board[i-1][j], board[i][j]
                 i -= 1
