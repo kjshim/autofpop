@@ -37,6 +37,23 @@ class ExampleTest(unittest.TestCase):
 		])
 		self.assertGreater(recognizer.score(data), 0.97)
 
+	def test_experimental(self):
+		recognizer = Recognizer()
+		recognizer.load_data([
+			'BASE',
+			'FLOWER', 'JAIL', 'SNOW',
+			'STRIPE_1', 'STRIPE_2', 'STRIPE_3',
+			'TRI',
+		])
+		recognizer.model = [RecognizerSplit(), RecognizerPCA(), RecognizerLDA(), RecognizerSVM()]
+		recognizer.model[1].n_components = 80
+		recognizer.model[2].n_components = 10
+		recognizer.fit()
+		recognizer.model[1].n_components = 75
+		recognizer.model[2].n_components = 30
+		self.assertGreater(recognizer.score(), 0.6)
+
+
 class ImageTest(unittest.TestCase):
 	def setUp(self):
 		self.subject = Image(
