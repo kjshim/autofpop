@@ -5,6 +5,8 @@ import numpy as np
 import os
 import glob
 
+from keras.preprocessing import image
+
 class Image(object):
 	downscale_res = (50, 50)
 
@@ -13,25 +15,33 @@ class Image(object):
 		if filename:
 			self.image = self.read(filename)
 
+	# @staticmethod
+	# def read(filename):
+	# 	return io.imread(filename)
+
 	@staticmethod
 	def read(filename):
-		return io.imread(filename)
+		return image.load_img(filename)
+
+	# def feature(self):
+	# 	def getColorVector(im, nbin):
+	# 		h1, v1 = exposure.histogram(im[:,:,0], nbin)
+	# 		h2, v2 = exposure.histogram(im[:,:,1], nbin)
+	# 		h3, v3 = exposure.histogram(im[:,:,2], nbin)
+	# 		h1 = h1 / (h1.sum() * 1.0)
+	# 		h2 = h2 / (h2.sum() * 1.0)
+	# 		h3 = h3 / (h3.sum() * 1.0)
+	# 		return np.append(h1,[h2,h3])
+	# 	resized = transform.resize(self.image, self.downscale_res)[:,:,:3]
+	# 	colvec  = getColorVector(resized, 5)
+	# 	return np.concatenate([
+	# 		resized.flatten(),
+	# 		colvec,
+	# 	])
 
 	def feature(self):
-		def getColorVector(im, nbin):
-			h1, v1 = exposure.histogram(im[:,:,0], nbin)
-			h2, v2 = exposure.histogram(im[:,:,1], nbin)
-			h3, v3 = exposure.histogram(im[:,:,2], nbin)
-			h1 = h1 / (h1.sum() * 1.0)
-			h2 = h2 / (h2.sum() * 1.0)
-			h3 = h3 / (h3.sum() * 1.0)
-			return np.append(h1,[h2,h3])
-		resized = transform.resize(self.image, self.downscale_res)[:,:,:3]
-		colvec  = getColorVector(resized, 5)
-		return np.concatenate([
-			resized.flatten(),
-			colvec,
-		])
+		# resized = transform.resize(self.image, self.downscale_res)[:,:,:3]
+		return image.img_to_array(self.image)
 
 class ImageReader(object):
 	base = 'Training_Data'

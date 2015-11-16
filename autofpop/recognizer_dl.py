@@ -2,15 +2,18 @@ from __future__ import absolute_import
 from __future__ import print_function
 import pandas as pd
 import numpy as np
-from keras.utils import np_utils # For y values
+from keras.utils import np_utils
 from keras.models import Sequential
-from keras.layers.core import Dense, Dropout
+from keras.layers.core import Dense, Dropout, Activation, Flatten
+from keras.layers.convolutional import Convolution2D, MaxPooling2D
+from keras.optimizers import SGD
 
 from autofpop.new_recognizer import RecognizerCommon
 
 class RecognizerDL(RecognizerCommon):
 	def fit(self):
-		X = np.array(self.data.X)
+		# X = np.array(self.data.X)
+		X = self.data.X
 
 		dimof_input = len(self.data.X[0])
 		dimof_output = len(set(self.data.y))
@@ -22,8 +25,8 @@ class RecognizerDL(RecognizerCommon):
 
 		batch_size = 128
 		dimof_middle = 1000
-		dropout = 0.7
-		countof_epoch = 10 #100
+		dropout = 0.3
+		countof_epoch = 20 #100
 		verbose = 1 #0
 		print('batch_size: ', batch_size)
 		print('dimof_middle: ', dimof_middle)
@@ -33,16 +36,32 @@ class RecognizerDL(RecognizerCommon):
 		print()
 
 		model = Sequential()
-		model.add(Dense(dimof_input, dimof_middle, init='uniform', activation='relu'))
-		model.add(Dropout(dropout))
-		model.add(Dense(dimof_middle, dimof_middle, init='uniform', activation='relu'))
-		model.add(Dropout(dropout))
-		model.add(Dense(dimof_middle, dimof_middle, init='uniform', activation='relu'))
-		model.add(Dropout(dropout))
-		model.add(Dense(dimof_middle, dimof_middle, init='uniform', activation='relu'))
-		model.add(Dropout(dropout))
-		model.add(Dense(dimof_middle, dimof_output, init='uniform', activation='softmax'))
-		model.compile(loss='mse', optimizer='sgd')
+		# input: 100x100 images with 3 channels -> (3, 100, 100) tensors.
+		# this applies 32 convolution filters of size 3x3 each.
+		model.add(Convolution2D(32, 3, 3, border_mode='full', input_shape=(3, 100, 100)))
+		model.add(Activation('relu'))
+		model.add(Convolution2D(32, 3, 3))
+		model.add(Activation('relu'))
+		model.add(MaxPooling2D(pool_size=(2, 2)))
+		model.add(Dropout(0.25))
+
+		model.add(Convolution2D(64, 3, 3, border_mode='valid'))
+		model.add(Activation('relu'))
+		model.add(Convolution2D(64, 3, 3))
+		model.add(Activation('relu'))
+		model.add(MaxPooling2D(pool_size=(2, 2)))
+		model.add(Dropout(0.25))
+
+		model.add(Flatten())
+		# Note: Keras does automatic shape inference.
+		model.add(Dense(256))
+		model.add(Activation('relu'))
+		model.add(Dropout(0.5))
+
+		model.add(Dense(10))
+		model.add(Activation('softmax'))
+		sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
+		model.compile(loss='categorical_crossentropy', optimizer=sgd)
 
 		model.fit(
 		    X, y,
