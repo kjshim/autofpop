@@ -15,33 +15,21 @@ class Image(object):
 		if filename:
 			self.image = self.read(filename)
 
-	# @staticmethod
-	# def read(filename):
-	# 	return io.imread(filename)
-
 	@staticmethod
 	def read(filename):
-		return image.load_img(filename)
-
-	# def feature(self):
-	# 	def getColorVector(im, nbin):
-	# 		h1, v1 = exposure.histogram(im[:,:,0], nbin)
-	# 		h2, v2 = exposure.histogram(im[:,:,1], nbin)
-	# 		h3, v3 = exposure.histogram(im[:,:,2], nbin)
-	# 		h1 = h1 / (h1.sum() * 1.0)
-	# 		h2 = h2 / (h2.sum() * 1.0)
-	# 		h3 = h3 / (h3.sum() * 1.0)
-	# 		return np.append(h1,[h2,h3])
-	# 	resized = transform.resize(self.image, self.downscale_res)[:,:,:3]
-	# 	colvec  = getColorVector(resized, 5)
-	# 	return np.concatenate([
-	# 		resized.flatten(),
-	# 		colvec,
-	# 	])
+		return io.imread(filename)
 
 	def feature(self):
-		# resized = transform.resize(self.image, self.downscale_res)[:,:,:3]
-		return image.img_to_array(self.image)
+		resized = transform.resize(self.image, self.downscale_res)[:,:,:3]
+		changed = np.zeros(
+			(
+				resized.shape[2],
+				resized.shape[0],
+				resized.shape[1]
+			), dtype="float32")
+		for channel in xrange(changed.shape[0]):
+			changed[channel, :, :] = resized[:, :, channel]
+		return changed
 
 class ImageReader(object):
 	base = 'Training_Data'
@@ -60,12 +48,15 @@ class ImageReader(object):
 
 class Data(object):
 	def load_data(self, klasses):
-		self.X = []
+		X = []
 		self.y = []
 		for klass in klasses:
 			for feature in ImageReader(klass).read():
-				self.X.append(feature)
+				X.append(feature)
 				self.y.append(klass)
+		self.X = np.zeros((len(X), ) + X[0].shape, dtype="float32")
+		for i, x in enumerate(X):
+			self.X[i, :, :, :] = x
 
 from sklearn.externals import joblib
 
