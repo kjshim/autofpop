@@ -22,10 +22,10 @@ class RecognizerDL(RecognizerCommon):
 		self.inverse, y = np.unique(self.data.y, return_inverse=True)
 		y = np_utils.to_categorical(y, dimof_output)
 
-		batch_size = 64
+		batch_size = 128
 		dimof_middle = 64
 		dropout = 0.5
-		countof_epoch = 30
+		countof_epoch = 100
 		verbose = 1
 		print('batch_size: ', batch_size)
 		print('dimof_middle: ', dimof_middle)
@@ -42,12 +42,12 @@ class RecognizerDL(RecognizerCommon):
 		self.model.add(MaxPooling2D(pool_size=(2, 2)))
 		self.model.add(Dropout(0.25))
 
-		# self.model.add(Convolution2D(16, 3, 3))
-		# self.model.add(Activation('relu'))
-		# self.model.add(Convolution2D(16, 3, 3))
-		# self.model.add(Activation('relu'))
-		# self.model.add(MaxPooling2D(pool_size=(2, 2)))
-		# self.model.add(Dropout(0.25))
+		self.model.add(Convolution2D(64, 3, 3))
+		self.model.add(Activation('relu'))
+		self.model.add(Convolution2D(64, 3, 3))
+		self.model.add(Activation('relu'))
+		self.model.add(MaxPooling2D(pool_size=(2, 2)))
+		self.model.add(Dropout(0.25))
 
 		self.model.add(Flatten())
 		# Note: Keras does automatic shape inference.
@@ -55,7 +55,7 @@ class RecognizerDL(RecognizerCommon):
 		self.model.add(Activation('relu'))
 		self.model.add(Dropout(dropout))
 
-		self.model.add(Dense(16))
+		self.model.add(Dense(dimof_middle))
 		self.model.add(Activation('relu'))
 		self.model.add(Dropout(dropout))
 
