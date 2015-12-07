@@ -23,11 +23,23 @@ class RecognizerDL(RecognizerCommon):
 		y = np_utils.to_categorical(y, dimof_output)
 
 		batch_size = 128
-		dimof_middle = 64
-		dropout = 0.5
-		countof_epoch = 100
+		conv1_filter = 32
+		conv1_size = 5
+		conv1_dropout= 0.25
+		conv2_filter = 64
+		conv2_size = 5
+		conv2_dropout= 0.25
+		dimof_middle = 256
+		dropout = 0.75
+		countof_epoch = 500
 		verbose = 1
 		print('batch_size: ', batch_size)
+		print('conv1_filter: ', conv1_filter)
+		print('conv1_size: ', conv1_size)
+		print('conv1_dropout: ', conv1_dropout)
+		print('conv2_filter: ', conv2_filter)
+		print('conv2_size: ', conv2_size)
+		print('conv2_dropout: ', conv2_dropout)
 		print('dimof_middle: ', dimof_middle)
 		print('dropout: ', dropout)
 		print('countof_epoch: ', countof_epoch)
@@ -35,19 +47,19 @@ class RecognizerDL(RecognizerCommon):
 		print()
 
 		self.model = Sequential()
-		self.model.add(Convolution2D(32, 3, 3, border_mode='same', input_shape=dimof_input))
+		self.model.add(Convolution2D(conv1_filter, conv1_size, conv1_size, border_mode='same', input_shape=dimof_input))
 		self.model.add(Activation('relu'))
-		self.model.add(Convolution2D(32, 3, 3))
+		self.model.add(Convolution2D(conv1_filter, conv1_size, conv1_size))
 		self.model.add(Activation('relu'))
 		self.model.add(MaxPooling2D(pool_size=(2, 2)))
-		self.model.add(Dropout(0.25))
+		self.model.add(Dropout(conv1_dropout))
 
-		self.model.add(Convolution2D(64, 3, 3))
+		self.model.add(Convolution2D(conv2_filter, conv2_size, conv2_size))
 		self.model.add(Activation('relu'))
-		self.model.add(Convolution2D(64, 3, 3))
+		self.model.add(Convolution2D(conv2_filter, conv2_size, conv2_size))
 		self.model.add(Activation('relu'))
 		self.model.add(MaxPooling2D(pool_size=(2, 2)))
-		self.model.add(Dropout(0.25))
+		self.model.add(Dropout(conv2_dropout))
 
 		self.model.add(Flatten())
 		# Note: Keras does automatic shape inference.
