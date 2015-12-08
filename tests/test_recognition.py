@@ -4,7 +4,7 @@ from skimage import io
 import os
 import glob
 
-def xtest_ImgRecognizer_example():
+def test_ImgRecognizer_example():
 	root = 'Training_Data'
 	klass = 'BLACK_BASE'
 	def value_of(name):
@@ -188,7 +188,7 @@ def xtest_Recognizer3():
 		# assert path.startswith('Training_Data/' + t1[0] + '_' + t2[0] + '/')
 	# assert False
 
-def test_Recognizer4():
+def xtest_Recognizer4():
 	'''
 	type1 = Recognizer([
 		'BLACK', 'BLUE', 'BROWN', 'GREEN',

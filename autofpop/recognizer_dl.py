@@ -19,8 +19,8 @@ class RecognizerDL(RecognizerCommon):
 		self.conv2_filter = 64
 		self.conv2_size = 5
 		self.conv2_dropout= 0.25
-		self.dimof_middle = 256
-		self.dropout = 0.75
+		self.dimof_middle = 64
+		self.dropout = 0.5
 		self.countof_epoch = 500
 		self.verbose = 1
 

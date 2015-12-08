@@ -49,15 +49,33 @@ def normalizeImage(screen):
         scNormalized = transform.resize(screen, SCREEN_NORMALIZE_SIZE)[172:772,4:539,:]
     return scNormalized
 
+from .friendspop import CELL_NAMES
+from .recognizer_dl import RecognizerDL
+from .new_recognizer import Image
+import numpy as np
+
+def value_of(name):
+    return next(
+        (key for key, value in CELL_NAMES.items() if value == name),
+        None)
+
+def predict(image):
+    recognizer_color = RecognizerDL()
+    recognizer_color.load('model/color')
+    recognizer_type = RecognizerDL()
+    recognizer_type.load('model/type')
+
+    image = np.array(Image(image=image).feature())
+
+    klass = '_'.join(
+        recognizer_color.predict(image).tolist() + 
+        recognizer_type.predict(image).tolist())
+    return value_of(klass)
 
 def createMatrixFromScreen(scNormalized):
-    model = recognition.ImgRecognizer()
-    model.load()
-    model.train()
-
     matrix = [[-1 for x in range(9)] for x in range(9)]
     for j in range(9):
         for i in range(9 - (j%2)):
-            matrix[i][j] = model.predict(GetCellImage(scNormalized, i,j))
+            matrix[i][j] = predict(GetCellImage(scNormalized, i,j))
 
     return matrix
