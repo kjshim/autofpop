@@ -6,6 +6,8 @@ from autofpop import ScreenReader
 from autofpop import friendspop
 import matplotlib.pyplot as plt
 
+from pprint import pprint
+
 def run():
 	andlib.Init()
 	while True:

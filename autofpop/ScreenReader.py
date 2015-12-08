@@ -59,16 +59,14 @@ def value_of(name):
         (key for key, value in CELL_NAMES.items() if value == name),
         None)
 
+recognizer_color = RecognizerDL()
+recognizer_color.load('model/color')
+recognizer_type = RecognizerDL()
+recognizer_type.load('model/type')
+
 def predict(image):
-    recognizer_color = RecognizerDL()
-    recognizer_color.load('model/color')
-    recognizer_type = RecognizerDL()
-    recognizer_type.load('model/type')
-
     image = np.array(Image(image=image).feature())
-
     # TODO: Save image
-
     klass = '_'.join(
         recognizer_color.predict(image).tolist() + 
         recognizer_type.predict(image).tolist())
