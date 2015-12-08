@@ -20,7 +20,30 @@ class ExampleTest(unittest.TestCase):
 			'TRI',
 		])
 		self.subject.model = [RecognizerSplit(), RecognizerDL()]
+		self.subject.model[-1].batch_size = 128
+		self.subject.model[-1].conv1_filter = 2
+		self.subject.model[-1].conv1_size = 3
+		self.subject.model[-1].conv1_dropout= 0.25
+		self.subject.model[-1].conv2_filter = 2
+		self.subject.model[-1].conv2_size = 3
+		self.subject.model[-1].conv2_dropout= 0.25
+		self.subject.model[-1].dimof_middle = 1
+		self.subject.model[-1].dropout = 0.5
+		self.subject.model[-1].countof_epoch = 1
+		self.subject.model[-1].verbose = 1
 		self.subject.fit()
-		print(self.subject.score())
+		score1 = self.subject.model[-1].score(self.subject.data)
 
-		self.fail()
+		model_filename = 'tmp/test_model'
+		self.subject.model[-1].dump(model_filename)
+		self.subject = RecognizerDL()
+		self.subject.load(model_filename)
+		self.subject.load_data([
+			'BASE',
+			'FLOWER', 'JAIL', 'SNOW',
+			'STRIPE_1', 'STRIPE_2', 'STRIPE_3',
+			'TRI',
+		])
+		score2 = self.subject.score(self.subject.data)
+
+		self.assertEqual(score1, score2)

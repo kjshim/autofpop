@@ -1,16 +1,39 @@
 from __future__ import absolute_import
 from __future__ import print_function
-import pandas as pd
 import numpy as np
 from keras.utils import np_utils
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.convolutional import Convolution2D, MaxPooling2D
-from keras.optimizers import SGD
+from keras.models import model_from_yaml
+from sklearn.externals import joblib
 
 from autofpop.new_recognizer import RecognizerCommon
 
 class RecognizerDL(RecognizerCommon):
+	def __init__(self):
+		self.batch_size = 128
+		self.conv1_filter = 32
+		self.conv1_size = 5
+		self.conv1_dropout= 0.25
+		self.conv2_filter = 64
+		self.conv2_size = 5
+		self.conv2_dropout= 0.25
+		self.dimof_middle = 256
+		self.dropout = 0.75
+		self.countof_epoch = 500
+		self.verbose = 1
+
+	def dump(self, filename):
+		open(filename + '.yaml', 'w').write(self.model.to_yaml())
+		joblib.dump(self.inverse, filename + '.pkl')
+		self.model.save_weights(filename + '.h5', overwrite=True)
+
+	def load(self, filename):
+		self.model = model_from_yaml(open(filename + '.yaml').read())
+		self.inverse = joblib.load(filename + '.pkl')
+		self.model.load_weights(filename + '.h5')
+
 	def fit(self):
 		X = self.data.X
 
@@ -22,54 +45,45 @@ class RecognizerDL(RecognizerCommon):
 		self.inverse, y = np.unique(self.data.y, return_inverse=True)
 		y = np_utils.to_categorical(y, dimof_output)
 
-		batch_size = 128
-		conv1_filter = 32
-		conv1_size = 5
-		conv1_dropout= 0.25
-		conv2_filter = 64
-		conv2_size = 5
-		conv2_dropout= 0.25
-		dimof_middle = 256
-		dropout = 0.75
-		countof_epoch = 500
-		verbose = 1
-		print('batch_size: ', batch_size)
-		print('conv1_filter: ', conv1_filter)
-		print('conv1_size: ', conv1_size)
-		print('conv1_dropout: ', conv1_dropout)
-		print('conv2_filter: ', conv2_filter)
-		print('conv2_size: ', conv2_size)
-		print('conv2_dropout: ', conv2_dropout)
-		print('dimof_middle: ', dimof_middle)
-		print('dropout: ', dropout)
-		print('countof_epoch: ', countof_epoch)
-		print('verbose: ', verbose)
+		print('batch_size: ', self.batch_size)
+		print('conv1_filter: ', self.conv1_filter)
+		print('conv1_size: ', self.conv1_size)
+		print('conv1_dropout: ', self.conv1_dropout)
+		print('conv2_filter: ', self.conv2_filter)
+		print('conv2_size: ', self.conv2_size)
+		print('conv2_dropout: ', self.conv2_dropout)
+		print('dimof_middle: ', self.dimof_middle)
+		print('dropout: ', self.dropout)
+		print('countof_epoch: ', self.countof_epoch)
+		print('verbose: ', self.verbose)
 		print()
 
 		self.model = Sequential()
-		self.model.add(Convolution2D(conv1_filter, conv1_size, conv1_size, border_mode='same', input_shape=dimof_input))
+		self.model.add(Convolution2D(
+			self.conv1_filter, self.conv1_size, self.conv1_size,
+			border_mode='same', input_shape=dimof_input))
 		self.model.add(Activation('relu'))
-		self.model.add(Convolution2D(conv1_filter, conv1_size, conv1_size))
+		self.model.add(Convolution2D(self.conv1_filter, self.conv1_size, self.conv1_size))
 		self.model.add(Activation('relu'))
 		self.model.add(MaxPooling2D(pool_size=(2, 2)))
-		self.model.add(Dropout(conv1_dropout))
+		self.model.add(Dropout(self.conv1_dropout))
 
-		self.model.add(Convolution2D(conv2_filter, conv2_size, conv2_size))
+		self.model.add(Convolution2D(self.conv2_filter, self.conv2_size, self.conv2_size))
 		self.model.add(Activation('relu'))
-		self.model.add(Convolution2D(conv2_filter, conv2_size, conv2_size))
+		self.model.add(Convolution2D(self.conv2_filter, self.conv2_size, self.conv2_size))
 		self.model.add(Activation('relu'))
 		self.model.add(MaxPooling2D(pool_size=(2, 2)))
-		self.model.add(Dropout(conv2_dropout))
+		self.model.add(Dropout(self.conv2_dropout))
 
 		self.model.add(Flatten())
 		# Note: Keras does automatic shape inference.
-		self.model.add(Dense(dimof_middle))
+		self.model.add(Dense(self.dimof_middle))
 		self.model.add(Activation('relu'))
-		self.model.add(Dropout(dropout))
+		self.model.add(Dropout(self.dropout))
 
-		self.model.add(Dense(dimof_middle))
+		self.model.add(Dense(self.dimof_middle))
 		self.model.add(Activation('relu'))
-		self.model.add(Dropout(dropout))
+		self.model.add(Dropout(self.dropout))
 
 		self.model.add(Dense(dimof_output))
 		self.model.add(Activation('softmax'))
@@ -78,9 +92,9 @@ class RecognizerDL(RecognizerCommon):
 		self.model.fit(
 		    X, y,
 		    show_accuracy=True, validation_split=0.2,
-		    batch_size=batch_size, nb_epoch=countof_epoch, verbose=verbose)
+		    batch_size=self.batch_size, nb_epoch=self.countof_epoch, verbose=self.verbose)
 
-		loss, accuracy = self.model.evaluate(X, y, show_accuracy=True, verbose=verbose)
+		loss, accuracy = self.model.evaluate(X, y, show_accuracy=True, verbose=self.verbose)
 		print('loss: ', loss)
 		print('accuracy: ', accuracy)
 		print()

@@ -41,5 +41,5 @@ class ExperimentalTest(unittest.TestCase):
 		print result
 		recognizer.model[1].n_components = 75
 		recognizer.model[2].n_components = 30
-		self.assertGreater(recognizer.score(), 5)
+		self.assertGreater(recognizer.score(), 0.5)
 		# self.assertGreater(recognizer.score(recognizer.data), 1)

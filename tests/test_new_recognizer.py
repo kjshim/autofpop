@@ -52,7 +52,7 @@ class ExampleTest(unittest.TestCase):
 		recognizer.fit()
 		recognizer.model[1].n_components = 75
 		recognizer.model[2].n_components = 30
-		self.assertGreater(recognizer.score(), 0.4)
+		self.assertGreater(recognizer.score(), 0.3)
 
 
 class ImageTest(unittest.TestCase):
