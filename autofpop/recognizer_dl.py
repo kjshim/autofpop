@@ -8,7 +8,7 @@ from keras.layers.convolutional import Convolution2D, MaxPooling2D
 from keras.models import model_from_yaml
 from sklearn.externals import joblib
 
-from autofpop.new_recognizer import RecognizerCommon
+from .new_recognizer import RecognizerCommon
 
 class RecognizerDL(RecognizerCommon):
 	def __init__(self):
