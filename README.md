@@ -32,6 +32,12 @@ $ conda install -y --file requirements.txt
 
 # Usage
 
+* Make model
+
+```
+$ python -m autofpop.make_model # Models are stored at model/
+```
+
 * Run Friends pop
 * Start the target stage
 * Execute the program like blow
