@@ -7,6 +7,7 @@ Auto solver for friends pop
 * adb
 * python 2.7 and related libraries (See requirements.txt)
 * keras (edge version for [this commit](https://github.com/fchollet/keras/commit/31cf6b16f48d1da338c7af26d64f5104534fe0ab))
+* tensorflow
 
 # Setup (on Mac)
 
@@ -29,6 +30,18 @@ $ rm Miniconda-latest-MacOSX-x86_64.sh
 ```
 $ conda install -y --file requirements.txt
 ```
+
+## Install TensorFlow
+
+TODO: description
+
+## Install Keras
+
+edge version for [this commit](https://github.com/fchollet/keras/commit/31cf6b16f48d1da338c7af26d64f5104534fe0ab)
+
+TODO: description
+
+TODO: description for setting ~/.keras/keras.json
 
 # Usage
 
