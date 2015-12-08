@@ -11,6 +11,7 @@ def save_model(name, data):
 	recognizer.model = [RecognizerSplit(), RecognizerDL()]
 	recognizer.fit()
 	recognizer.model[-1].dump('model/' + name)
+	print('Test accuracy: ', recognizer.score())
 
 if __name__ == '__main__':
 	save_model('color', [
