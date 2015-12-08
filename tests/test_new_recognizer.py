@@ -2,6 +2,7 @@ from autofpop.new_recognizer import Image
 from autofpop.new_recognizer import ImageReader
 from autofpop.new_recognizer import Data
 from autofpop.new_recognizer import Recognizer
+from autofpop.new_recognizer import RecognizerFlatten
 from autofpop.new_recognizer import RecognizerSVM
 from autofpop.new_recognizer import RecognizerPCA
 from autofpop.new_recognizer import RecognizerLDA
@@ -20,7 +21,7 @@ class ExampleTest(unittest.TestCase):
 			'CONE', 'MAPSCROLL', 'STONE',
 			'NA',
 		])
-		recognizer.model = [RecognizerSplit(), RecognizerPCA(), RecognizerSVM()]
+		recognizer.model = [RecognizerFlatten(), RecognizerSplit(), RecognizerPCA(), RecognizerSVM()]
 		recognizer.fit()
 		self.assertGreater(recognizer.score(), 0.9)
 		recognizer.clear()
@@ -45,13 +46,13 @@ class ExampleTest(unittest.TestCase):
 			'STRIPE_1', 'STRIPE_2', 'STRIPE_3',
 			'TRI',
 		])
-		recognizer.model = [RecognizerSplit(), RecognizerPCA(), RecognizerLDA(), RecognizerSVM()]
+		recognizer.model = [RecognizerFlatten(), RecognizerSplit(), RecognizerPCA(), RecognizerLDA(), RecognizerSVM()]
 		recognizer.model[1].n_components = 80
 		recognizer.model[2].n_components = 10
 		recognizer.fit()
 		recognizer.model[1].n_components = 75
 		recognizer.model[2].n_components = 30
-		self.assertGreater(recognizer.score(), 0.6)
+		self.assertGreater(recognizer.score(), 0.4)
 
 
 class ImageTest(unittest.TestCase):
@@ -120,27 +121,27 @@ class RecognizerTest(unittest.TestCase):
 
 	def test_fit_predict(self):
 		self.subject.load_data(['BLACK', 'BLUE'])
-		self.subject.model = [RecognizerSVM()]
+		self.subject.model = [RecognizerFlatten(), RecognizerSVM()]
 		self.subject.fit()
 		for X, y in zip(self.subject.data.X, self.subject.data.y):
 			self.assertEqual(self.subject.predict(X), y)
 
 	def test_fit_predict_with_PCA_SVM(self):
 		self.subject.load_data(['BLACK', 'BLUE'])
-		self.subject.model = [RecognizerPCA(), RecognizerSVM()]
+		self.subject.model = [RecognizerFlatten(), RecognizerPCA(), RecognizerSVM()]
 		self.subject.fit()
 		for X, y in zip(self.subject.data.X, self.subject.data.y):
 			self.assertEqual(self.subject.predict(X), y)
 
 	def test_fit_predict_with_Split_PCA_SVM(self):
 		self.subject.load_data(['BLACK', 'BLUE'])
-		self.subject.model = [RecognizerSplit(), RecognizerPCA(), RecognizerSVM()]
+		self.subject.model = [RecognizerFlatten(), RecognizerSplit(), RecognizerPCA(), RecognizerSVM()]
 		self.subject.fit()
 		self.subject.score()
 
 	def test_fit_predict_with_LDA_SVM(self):
 		self.subject.load_data(['BLACK', 'BLUE'])
-		self.subject.model = [RecognizerLDA(), RecognizerSVM()]
+		self.subject.model = [RecognizerFlatten(), RecognizerLDA(), RecognizerSVM()]
 		self.subject.fit()
 		for X, y in zip(self.subject.data.X, self.subject.data.y):
 			self.assertEqual(self.subject.predict(X), y)
@@ -148,7 +149,7 @@ class RecognizerTest(unittest.TestCase):
 	def test_dump_load(self):
 		model_filename = 'tmp/test_model.pkl'
 		self.subject.load_data(['BLACK', 'BLUE'])
-		self.subject.model = [RecognizerPCA(), RecognizerSVM()]
+		self.subject.model = [RecognizerFlatten(), RecognizerPCA(), RecognizerSVM()]
 		self.subject.fit()
 		self.subject.dump(model_filename)
 
@@ -159,18 +160,37 @@ class RecognizerTest(unittest.TestCase):
 		for X, y in zip(data.X, data.y):
 			self.assertEqual(self.subject.predict(X), y)
 
-class RecognizerSVMTest(unittest.TestCase):
+class RecognizerFlattenTest(unittest.TestCase):
 	def setUp(self):
 		self.original_base = ImageReader.base
 		ImageReader.base = 'tests/fixtures/' + ImageReader.base
 
-		self.subject = RecognizerSVM()
+		self.subject = RecognizerFlatten()
 
 	def tearDown(self):
 		ImageReader.base = self.original_base
 
 	def test_fit_predict(self):
 		self.subject.load_data(['BLACK', 'BLUE'])
+		self.subject.fit()
+		self.assertEqual(
+			self.subject.predict(self.subject.data.X).shape[1], 3 * 50 * 50)
+		for X, y in zip(self.subject.data.X, self.subject.data.y):
+			self.assertEqual(self.subject.predict(X).shape, (3 * 50 * 50, ))
+
+class RecognizerSVMTest(unittest.TestCase):
+	def setUp(self):
+		self.original_base = ImageReader.base
+		ImageReader.base = 'tests/fixtures/' + ImageReader.base
+
+		self.subject = Recognizer()
+
+	def tearDown(self):
+		ImageReader.base = self.original_base
+
+	def test_fit_predict(self):
+		self.subject.load_data(['BLACK', 'BLUE'])
+		self.subject.model = [RecognizerFlatten(), RecognizerSVM()]
 		self.subject.fit()
 		for X, y in zip(self.subject.data.X, self.subject.data.y):
 			self.assertEqual(self.subject.predict(X), y)
@@ -180,13 +200,14 @@ class RecognizerPCATest(unittest.TestCase):
 		self.original_base = ImageReader.base
 		ImageReader.base = 'tests/fixtures/' + ImageReader.base
 
-		self.subject = RecognizerPCA()
+		self.subject = Recognizer()
 
 	def tearDown(self):
 		ImageReader.base = self.original_base
 
 	def test_fit_predict(self):
 		self.subject.load_data(['BLACK', 'BLUE'])
+		self.subject.model = [RecognizerFlatten(), RecognizerPCA()]
 		self.subject.fit()
 		for X, y in zip(self.subject.data.X, self.subject.data.y):
 			self.assertTrue(self.subject.predict(X) is not None)
@@ -196,13 +217,14 @@ class RecognizerLDATest(unittest.TestCase):
 		self.original_base = ImageReader.base
 		ImageReader.base = 'tests/fixtures/' + ImageReader.base
 
-		self.subject = RecognizerLDA()
+		self.subject = Recognizer()
 
 	def tearDown(self):
 		ImageReader.base = self.original_base
 
 	def test_fit_predict(self):
 		self.subject.load_data(['BLACK', 'BLUE'])
+		self.subject.model = [RecognizerFlatten(), RecognizerLDA()]
 		self.subject.fit()
 		for X, y in zip(self.subject.data.X, self.subject.data.y):
 			self.assertTrue(self.subject.predict(X) is not None)

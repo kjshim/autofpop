@@ -119,11 +119,18 @@ class Recognizer(RecognizerCommon):
 	def score(self, test=None):
 		if not test:
 			test = Data()
-			test.X = []
-			test.y = []
+			test.X = np.array([])
+			test.y = np.array([])
 		for recognizer in self.model:
 			test = recognizer.score(test)
 		return test
+
+class RecognizerFlatten(RecognizerCommon):
+	def fit(self):
+		pass
+
+	def predict(self, X):
+		return X.reshape(X.shape[:-3] + (-1, ))
 
 from sklearn.grid_search import GridSearchCV
 from sklearn.svm import SVC
