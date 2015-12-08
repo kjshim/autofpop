@@ -67,6 +67,8 @@ def predict(image):
 
     image = np.array(Image(image=image).feature())
 
+    # TODO: Save image
+
     klass = '_'.join(
         recognizer_color.predict(image).tolist() + 
         recognizer_type.predict(image).tolist())
