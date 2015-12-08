@@ -13,15 +13,15 @@ from .new_recognizer import RecognizerCommon
 class RecognizerDL(RecognizerCommon):
 	def __init__(self):
 		self.batch_size = 128
-		self.conv1_filter = 32
-		self.conv1_size = 5
+		self.conv1_filter = 16
+		self.conv1_size = 3
 		self.conv1_dropout= 0.25
-		self.conv2_filter = 64
-		self.conv2_size = 5
+		self.conv2_filter = 32
+		self.conv2_size = 3
 		self.conv2_dropout= 0.25
 		self.dimof_middle = 64
 		self.dropout = 0.5
-		self.countof_epoch = 500
+		self.countof_epoch = 200
 		self.verbose = 1
 
 	def dump(self, filename):

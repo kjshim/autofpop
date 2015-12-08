@@ -9,7 +9,6 @@ def save_model(name, data):
 	recognizer = Recognizer()
 	recognizer.load_data(data)
 	recognizer.model = [RecognizerSplit(), RecognizerDL()]
-	recognizer.model[-1].countof_epoch = 1
 	recognizer.fit()
 	recognizer.model[-1].dump('model/' + name)
 
