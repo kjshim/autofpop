@@ -386,7 +386,7 @@ class SimpleSolver:
 
         for (i, j) in jail_cells:
             to_explode.remove((i, j))
-            board[i][j] = CELL_NAME_TO_VALUE[CELL_NAMES[board[i][j]].replace("_JAIL", "")]
+            board[i][j] = CELL_NAME_TO_VALUE[CELL_NAMES[board[i][j]].replace("_JAIL", "_BASE")]
         score += 200 * jail_removal
 
         if line_explosion_size > 0:
