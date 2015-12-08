@@ -56,9 +56,9 @@ def ReadRawImage(fname):
     im = arr[12:].reshape((h,w,4))
     return im
 
-def GetScreen(fname='tmp/img.raw'):
+def GetScreen(fname='img.raw'):
     logging.debug(subprocess.check_output(["adb", "-d", "shell", "/system/bin/screencap %s/%s"%(C['TMP_DIR'], fname) ]))
-    logging.debug(subprocess.check_output(["adb", "-d", "pull", "%s/%s"%(C['TMP_DIR'], fname), fname ],stderr=subprocess.STDOUT))
+    logging.debug(subprocess.check_output(["adb", "-d", "pull", "%s/%s"%(C['TMP_DIR'], fname), "tmp/" + fname ],stderr=subprocess.STDOUT))
     logging.debug(subprocess.check_output(["adb", "-d", "shell", "rm %s/%s" % (C['TMP_DIR'],fname) ]))
     im = ReadRawImage(fname)
     return im
