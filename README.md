@@ -6,6 +6,8 @@ Auto solver for friends pop
 
 * adb
 * python 2.7 and related libraries (See requirements.txt)
+* keras (edge version for [this commit](https://github.com/fchollet/keras/commit/31cf6b16f48d1da338c7af26d64f5104534fe0ab))
+* tensorflow
 
 # Setup (on Mac)
 
@@ -20,6 +22,7 @@ $ brew install android-platform-tools
 ```
 $ wget https://repo.continuum.io/miniconda/Miniconda-latest-MacOSX-x86_64.sh
 $ bash Miniconda-latest-MacOSX-x86_64.sh
+$ rm Miniconda-latest-MacOSX-x86_64.sh
 ```
 
 ## Install requirements with conda
@@ -28,7 +31,25 @@ $ bash Miniconda-latest-MacOSX-x86_64.sh
 $ conda install -y --file requirements.txt
 ```
 
+## Install TensorFlow
+
+TODO: description
+
+## Install Keras
+
+edge version for [this commit](https://github.com/fchollet/keras/commit/31cf6b16f48d1da338c7af26d64f5104534fe0ab)
+
+TODO: description
+
+TODO: description for setting ~/.keras/keras.json
+
 # Usage
+
+* Make model
+
+```
+$ python -m autofpop.make_model # Models are stored at model/
+```
 
 * Run Friends pop
 * Start the target stage
@@ -51,8 +72,8 @@ $ nosetests
 
 # Files to check
 
-* andlib.py
-* ScreenReader.py
-* recognition.py
-* friendspop.py
-* test_friendspop.py
+* autofpop/andlib.py
+* autofpop/ScreenReader.py
+* autofpop/recognition.py
+* autofpop/friendspop.py
+* tests/test_friendspop.py

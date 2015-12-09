@@ -58,9 +58,9 @@ def ReadRawImage(fname):
 
 def GetScreen(fname='img.raw'):
     logging.debug(subprocess.check_output(["adb", "-d", "shell", "/system/bin/screencap %s/%s"%(C['TMP_DIR'], fname) ]))
-    logging.debug(subprocess.check_output(["adb", "-d", "pull", "%s/%s"%(C['TMP_DIR'], fname), fname ],stderr=subprocess.STDOUT))
+    logging.debug(subprocess.check_output(["adb", "-d", "pull", "%s/%s"%(C['TMP_DIR'], fname), "tmp/" + fname ],stderr=subprocess.STDOUT))
     logging.debug(subprocess.check_output(["adb", "-d", "shell", "rm %s/%s" % (C['TMP_DIR'],fname) ]))
-    im = ReadRawImage(fname)
+    im = ReadRawImage("tmp/" + fname)
     return im
 
 def GetDeviceId():
