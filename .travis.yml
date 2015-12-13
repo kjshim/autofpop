@@ -12,7 +12,7 @@ before_install:
   - conda install -y pip
 install:
   - pip install https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.5.0-cp27-none-linux_x86_64.whl
-  - pip install --no-deps git+git://github.com/fchollet/keras.git
+  - pip install --no-deps git+git://github.com/fchollet/keras.git@31cf6b16f48d1da338c7af26d64f5104534fe0ab
   - mkdir ~/.keras
   - "echo '{\"epsilon\": 1e-07, \"floatx\": \"float32\", \"backend\": \"tensorflow\"}' > ~/.keras/keras.json"
   - conda install -y --file requirements.txt

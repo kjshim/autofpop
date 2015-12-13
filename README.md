@@ -13,13 +13,13 @@ Auto solver for friends pop
 
 ## Install adb
 
-```
+```sh
 $ brew install android-platform-tools
 ```
 
 ## Install conda with python 2.7
 
-```
+```sh
 $ wget https://repo.continuum.io/miniconda/Miniconda-latest-MacOSX-x86_64.sh
 $ bash Miniconda-latest-MacOSX-x86_64.sh
 $ rm Miniconda-latest-MacOSX-x86_64.sh
@@ -27,7 +27,7 @@ $ rm Miniconda-latest-MacOSX-x86_64.sh
 
 ## Install requirements with conda
 
-```
+```sh
 $ conda install -y --file requirements.txt
 ```
 
@@ -45,18 +45,28 @@ TODO: description for setting ~/.keras/keras.json
 
 # Usage
 
-* Make model
+## Make model
 
-```
+Skip this step if you want to use pre-generated model.
+
+```sh
 $ python -m autofpop.make_model # Models are stored at model/
 ```
+
+## Check the accuracy of current model
+
+```sh
+$ python -m autofpop.show_accuracy
+```
+
+## Run
 
 * Run Friends pop
 * Start the target stage
 * Execute the program like blow
 
-```
-$ python test_friendspop.py
+```sh
+$ python -m autofpop.run
 ```
 
 * Repeat
@@ -66,7 +76,7 @@ $ python test_friendspop.py
 
 # Test
 
-```
+```sh
 $ nosetests
 ```
 
