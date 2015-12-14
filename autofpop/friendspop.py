@@ -1,9 +1,4 @@
 from copy import deepcopy
-import datetime
-
-def getTimeStr():
-    dt=datetime.datetime.now()
-    return dt.strftime('%Y%m%d%H%M%S')
 
 DEBUG_EXPLOSIONS = False
 CELL_NAMES = {

@@ -49,6 +49,20 @@ def normalizeImage(screen):
         scNormalized = transform.resize(screen, SCREEN_NORMALIZE_SIZE)[172:772,4:539,:]
     return scNormalized
 
+def read(fname):
+    return io.imread(fname)[:,:,:3] # remove alpha
+
+import datetime
+
+def getTimeStr():
+    dt=datetime.datetime.now()
+    return dt.strftime('%Y%m%d%H%M%S')
+
+def write(sc, fname=None):
+    if not fname:
+        fname = 'data/screen/' + getTimeStr() + '.png'
+    io.imsave(fname, sc)
+
 from .friendspop import CELL_NAMES
 from .recognizer_dl import RecognizerDL
 from .new_recognizer import Image
