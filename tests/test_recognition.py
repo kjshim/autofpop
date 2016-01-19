@@ -27,7 +27,7 @@ from skimage import transform
 from skimage import io
 from skimage import exposure
 from sklearn.decomposition import RandomizedPCA
-from sklearn.lda import LDA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.grid_search import GridSearchCV
 from sklearn.svm import SVC
 from sklearn.metrics import classification_report
@@ -86,13 +86,13 @@ class Recognizer(object):
 		return RandomizedPCA(n_components=n_components, whiten=True).fit(X)
 
 	def lda_(self, X, y, n_components):
-		return LDA(n_components=n_components).fit(X, y)
+		return LinearDiscriminantAnalysis(n_components=n_components).fit(X, y)
 
 	def train_(self, X, y):
 		simple = self.simplify(X, y, self.n_components)
 		X_simple = simple.transform(X)
 		clf = GridSearchCV(
-			SVC(kernel='rbf', class_weight='auto'),
+			SVC(kernel='rbf', class_weight='balanced'),
 			self.param_grid)
 		clf = clf.fit(X_simple, y)
 		return simple, clf

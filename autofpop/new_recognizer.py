@@ -93,6 +93,11 @@ class RecognizerCommon(object):
 	def score(self, test):
 		return self.transform_(test)
 
+	def correct_dim(self, X):
+		if len(X.shape) < 2:
+			return X.reshape((-1, ) + X.shape)
+		return X
+
 class Recognizer(RecognizerCommon):
 	def clear(self):
 		for recognizer in self.model:
@@ -143,11 +148,11 @@ class RecognizerSVM(RecognizerCommon):
 
 	def fit(self):
 		self.model = GridSearchCV(
-			SVC(kernel='rbf', class_weight='auto'),
+			SVC(kernel='rbf', class_weight='balanced'),
 			self.param_grid).fit(self.data.X, self.data.y)
 
 	def predict(self, X):
-		return self.model.predict(X)
+		return self.model.predict(self.correct_dim(X))
 
 	def score(self, test):
 		return self.model.score(test.X, test.y)
@@ -184,15 +189,15 @@ class RecognizerPCA(RecognizerCommon):
 			n_components=self.n_components, whiten=True).fit(self.data.X)
 
 	def predict(self, X):
-		return self.model.transform(X)
+		return self.model.transform(self.correct_dim(X))
 
-from sklearn.lda import LDA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 class RecognizerLDA(RecognizerCommon):
 	n_components = 30
 	def fit(self):
-		self.model = LDA(
+		self.model = LinearDiscriminantAnalysis(
 			n_components=self.n_components).fit(self.data.X, self.data.y)
 
 	def predict(self, X):
-		return self.model.transform(X)
+		return self.model.transform(self.correct_dim(X))

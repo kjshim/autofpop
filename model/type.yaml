@@ -7,6 +7,7 @@ layers:
   b_constraint: null
   b_regularizer: null
   border_mode: same
+  cache_enabled: true
   dim_ordering: th
   init: glorot_uniform
   input_shape: !!python/tuple [3, 50, 50]
@@ -15,7 +16,7 @@ layers:
   nb_filter: 16
   nb_row: 3
   subsample: &id001 !!python/tuple [1, 1]
-- {activation: relu, beta: 0.1, name: Activation, target: 0}
+- {activation: relu, cache_enabled: true, name: Activation}
 - W_constraint: null
   W_regularizer: null
   activation: linear
@@ -23,6 +24,7 @@ layers:
   b_constraint: null
   b_regularizer: null
   border_mode: valid
+  cache_enabled: true
   dim_ordering: th
   init: glorot_uniform
   name: Convolution2D
@@ -30,13 +32,14 @@ layers:
   nb_filter: 16
   nb_row: 3
   subsample: *id001
-- {activation: relu, beta: 0.1, name: Activation, target: 0}
+- {activation: relu, cache_enabled: true, name: Activation}
 - border_mode: valid
+  cache_enabled: true
   dim_ordering: th
   name: MaxPooling2D
   pool_size: &id002 !!python/tuple [2, 2]
   strides: *id002
-- {name: Dropout, p: 0.25}
+- {cache_enabled: true, name: Dropout, p: 0.25}
 - W_constraint: null
   W_regularizer: null
   activation: linear
@@ -44,6 +47,7 @@ layers:
   b_constraint: null
   b_regularizer: null
   border_mode: valid
+  cache_enabled: true
   dim_ordering: th
   init: glorot_uniform
   name: Convolution2D
@@ -51,7 +55,7 @@ layers:
   nb_filter: 32
   nb_row: 3
   subsample: *id001
-- {activation: relu, beta: 0.1, name: Activation, target: 0}
+- {activation: relu, cache_enabled: true, name: Activation}
 - W_constraint: null
   W_regularizer: null
   activation: linear
@@ -59,6 +63,7 @@ layers:
   b_constraint: null
   b_regularizer: null
   border_mode: valid
+  cache_enabled: true
   dim_ordering: th
   init: glorot_uniform
   name: Convolution2D
@@ -66,29 +71,29 @@ layers:
   nb_filter: 32
   nb_row: 3
   subsample: *id001
-- {activation: relu, beta: 0.1, name: Activation, target: 0}
+- {activation: relu, cache_enabled: true, name: Activation}
 - border_mode: valid
+  cache_enabled: true
   dim_ordering: th
   name: MaxPooling2D
   pool_size: &id003 !!python/tuple [2, 2]
   strides: *id003
-- {name: Dropout, p: 0.25}
-- {name: Flatten}
+- {cache_enabled: true, name: Dropout, p: 0.25}
+- {cache_enabled: true, name: Flatten}
 - {W_constraint: null, W_regularizer: null, activation: linear, activity_regularizer: null,
-  b_constraint: null, b_regularizer: null, init: glorot_uniform, input_dim: null,
-  name: Dense, output_dim: 64}
-- {activation: relu, beta: 0.1, name: Activation, target: 0}
-- {name: Dropout, p: 0.5}
+  b_constraint: null, b_regularizer: null, cache_enabled: true, init: glorot_uniform,
+  input_dim: null, name: Dense, output_dim: 64}
+- {activation: relu, cache_enabled: true, name: Activation}
+- {cache_enabled: true, name: Dropout, p: 0.5}
 - {W_constraint: null, W_regularizer: null, activation: linear, activity_regularizer: null,
-  b_constraint: null, b_regularizer: null, init: glorot_uniform, input_dim: null,
-  name: Dense, output_dim: 64}
-- {activation: relu, beta: 0.1, name: Activation, target: 0}
-- {name: Dropout, p: 0.5}
+  b_constraint: null, b_regularizer: null, cache_enabled: true, init: glorot_uniform,
+  input_dim: null, name: Dense, output_dim: 64}
+- {activation: relu, cache_enabled: true, name: Activation}
+- {cache_enabled: true, name: Dropout, p: 0.5}
 - {W_constraint: null, W_regularizer: null, activation: linear, activity_regularizer: null,
-  b_constraint: null, b_regularizer: null, init: glorot_uniform, input_dim: null,
-  name: Dense, output_dim: 8}
-- {activation: softmax, beta: 0.1, name: Activation, target: 0}
+  b_constraint: null, b_regularizer: null, cache_enabled: true, init: glorot_uniform,
+  input_dim: null, name: Dense, output_dim: 8}
+- {activation: softmax, cache_enabled: true, name: Activation}
 loss: categorical_crossentropy
 name: Sequential
 optimizer: {epsilon: 1.0e-06, lr: 1.0, name: Adadelta, rho: 0.95}
-theano_mode: null
